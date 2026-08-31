@@ -6,8 +6,8 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "scheme": "hush",
-    "plugins": ["expo-router"],
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.hush.voicecompanion" },
+    "plugins": ["expo-router", ["expo-speech-recognition", { "microphonePermission": "Allow Hush Companion to use your microphone.", "speechRecognitionPermission": "Allow Hush Companion to recognize your speech." }]],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.hush.voicecompanion", "infoPlist": { "NSSpeechRecognitionUsageDescription": "Hush Companion uses speech recognition when you choose to speak.", "NSMicrophoneUsageDescription": "Hush Companion uses the microphone only during an active conversation." } },
     "android": { "package": "com.hush.voicecompanion" }
   }
 }

@@ -224,9 +224,11 @@ VITE_API_URL=http://localhost:3000
 
 The proxy expects Ollama at `http://127.0.0.1:11434` and Kokoro at `http://127.0.0.1:8000` by default. Override them with `OLLAMA_URL` and `KOKORO_URL` in `api-server/.env` if needed. Gemini requests do not use this proxy; the user's key is sent directly from the browser to Google.
 
-## Mobile starter
+## Android and iOS app
 
-The Expo starter lives in `apps/mobile`:
+The native Expo app lives in `apps/mobile`. It supports the same Vent, Debate, Listen, and Wellness check-in modes, Gemini or Ollama, native speech recognition, speech output, transcript sharing, and light/dark themes.
+
+Install and start it with:
 
 ```bash
 cd apps/mobile
@@ -234,7 +236,14 @@ npm install
 npx expo start
 ```
 
-For a physical device, configure the app to use the machine's LAN IP or a public HTTPS API URL. Do not use `localhost` or `127.0.0.1` from a phone. Native microphone and audio features require an Expo development build and the relevant Xcode or Android Studio setup.
+Because native speech recognition is used, run a development build rather than relying only on Expo Go:
+
+```bash
+npx expo run:android
+npx expo run:ios
+```
+
+Android requires Android Studio and an emulator or USB-connected device. iOS requires macOS, Xcode, and an iOS simulator or device. On a physical phone, configure Ollama with the computer's LAN IP or an HTTPS endpoint; `localhost` and `127.0.0.1` refer to the phone itself. Gemini keys entered in the mobile app are extractable from an installed app, so use restricted personal keys and monitor their quotas.
 
 ## Cloudflare Tunnel
 

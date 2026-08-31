@@ -4,5 +4,5 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": { "start": "expo start", "android": "expo run:android", "ios": "expo run:ios" },
-  "dependencies": { "expo": "latest", "expo-router": "latest", "expo-status-bar": "latest", "react": "latest", "react-native": "latest", "@expo/vector-icons": "latest" }
+  "dependencies": { "expo": "latest", "expo-router": "latest", "expo-status-bar": "latest", "expo-speech": "latest", "expo-speech-recognition": "latest", "react": "latest", "react-native": "latest", "@expo/vector-icons": "latest" }
 }

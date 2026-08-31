@@ -31,7 +31,7 @@ export function preferredVoice(preferences: VoicePreferences, voices: SpeechSynt
 }
 
 let activeAudio: HTMLAudioElement | null = null; let activeAudioCancel: (() => void) | null = null; let activeSpeechCancel: (() => void) | null = null; let activeTtsController: AbortController | null = null; let speechGeneration = 0;
-export function stopSpeaking(): void { speechGeneration += 1; activeTtsController?.abort(); activeTtsController = null; activeSpeechCancel?.(); activeSpeechCancel = null; activeAudioCancel?.(); activeAudioCancel = null; if ('speechSynthesis' in window) window.speechSynthesis.cancel(); if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio.src = ''; activeAudio = null; } }
+export function stopSpeaking(): void { speechGeneration += 1; activeTtsController?.abort(); activeTtsController = null; activeSpeechCancel?.(); activeSpeechCancel = null; activeAudioCancel?.(); activeAudioCancel = null; if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel(); if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio.src = ''; activeAudio = null; } }
 
 export function createVoiceGate(onVoice: () => void): { start: () => Promise<boolean>; stop: () => void } {
   let context: AudioContext | null = null; let stream: MediaStream | null = null; let source: MediaStreamAudioSourceNode | null = null; let analyser: AnalyserNode | null = null; let frame = 0; let active = false; let speakingFrames = 0; let lastVoice = 0;

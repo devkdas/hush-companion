@@ -34,7 +34,7 @@ We are building Hush Companion in public so developers and users can understand 
 - **Local transcript downloads** — save a conversation as a text file from the browser.
 - **No account required** — the open-source version has no login, payment wall, or subscription system.
 - **Light and dark themes** — use the interface comfortably across environments.
-- **Mobile starter** — an Expo starter is available in [`apps/mobile`](../apps/mobile).
+- **Android and iOS app** — a functional Expo app is available in [`apps/mobile`](../apps/mobile), using native speech recognition and speech output.
 
 ## Brand assets
 
@@ -213,6 +213,25 @@ For setup services, private self-hosted deployments, custom development, and val
 A future hosted or private corporate edition could offer private workspaces, hosted AI and voice, privacy-preserving aggregate reports, data retention controls, custom branding, and priority support. Employers should not be able to read individual employee conversations.
 
 The current repository is not enterprise-ready: it has no accounts, tenant separation, corporate admin controls, server-side retention policies, or enterprise security certification. Read the [corporate wellness direction](corporate-wellness.md) before making workplace or compliance claims.
+
+## Android and iOS app
+
+The native app in `apps/mobile` uses Expo and React Native. It includes the four conversation modes, Gemini and Ollama settings, native speech recognition, native speech output, transcript sharing, and light/dark themes.
+
+```bash
+cd apps/mobile
+npm install
+npx expo start
+```
+
+Native speech recognition requires a development build:
+
+```bash
+npx expo run:android
+npx expo run:ios
+```
+
+On a physical device, use the computer's LAN IP or an HTTPS URL for Ollama. `localhost` on a phone means the phone, not the development computer. A Gemini key entered into a mobile app is not a server secret and can be extracted; use a restricted key and monitor usage.
 
 ## Development
 
