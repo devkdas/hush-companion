@@ -1,0 +1,8 @@
+# Rename to config.yml and replace the tunnel ID and credentials file path.
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /Users/YOUR_USER/.cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: api.example.com
+    service: http://127.0.0.1:3000
+  - service: http_status:404

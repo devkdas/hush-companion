@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="480" viewBox="0 0 1600 480" role="img" aria-labelledby="title desc">
+  <title id="title">Hush Companion logo</title>
+  <desc id="desc">A coral and mint voice wave beside the Hush Companion wordmark.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171b22"/>
+      <stop offset="1" stop-color="#203532"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e89078"/>
+      <stop offset="0.5" stop-color="#f5e4c9"/>
+      <stop offset="1" stop-color="#92c4ae"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="480" rx="120" fill="url(#background)"/>
+  <g transform="translate(80 80)" fill="none" stroke="url(#wave)" stroke-width="24" stroke-linecap="round">
+    <path d="M0 160 C24 160 24 122 48 122 C72 122 72 198 96 198 C120 198 120 78 144 78 C168 78 168 242 192 242 C216 242 216 38 240 38 C264 38 264 282 288 282 C312 282 312 112 336 112 C360 112 360 160 384 160"/>
+  </g>
+  <text x="560" y="245" fill="#f5e4c9" font-family="Arial, Helvetica, sans-serif" font-size="116" font-weight="700" letter-spacing="2">hush</text>
+  <text x="895" y="245" fill="#e89078" font-family="Arial, Helvetica, sans-serif" font-size="116" font-weight="700" letter-spacing="2">companion</text>
+  <circle cx="1458" cy="224" r="10" fill="#da745e"/>
+  <text x="565" y="318" fill="#b6c9bf" font-family="Arial, Helvetica, sans-serif" font-size="28" letter-spacing="8">A VOICE THAT STAYS</text>
+</svg>

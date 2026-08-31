@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Hush Companion</title>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171b22"/>
+      <stop offset="1" stop-color="#203532"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e89078"/>
+      <stop offset="0.5" stop-color="#f5e4c9"/>
+      <stop offset="1" stop-color="#92c4ae"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#background)"/>
+  <path d="M9 32 C12 32 12 27 15 27 C18 27 18 37 21 37 C24 37 24 22 27 22 C30 22 30 42 33 42 C36 42 36 17 39 17 C42 17 42 47 45 47 C48 47 48 25 51 25 C54 25 54 32 56 32" fill="none" stroke="url(#wave)" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="32" cy="54" r="1.5" fill="#da745e"/>
+</svg>

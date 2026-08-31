@@ -1,0 +1,15 @@
+{
+  "name": "hush-companion-api-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "start": "tsx server.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "latest",
+    "@fastify/rate-limit": "latest",
+    "fastify": "latest",
+    "tsx": "latest"
+  }
+}

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Hush Companion avatar</title>
+  <desc id="desc">A calm coral and mint voice wave mark on a dark background.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171b22"/>
+      <stop offset="0.55" stop-color="#252b35"/>
+      <stop offset="1" stop-color="#172b2b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="52%">
+      <stop offset="0" stop-color="#7fae9d" stop-opacity="0.22"/>
+      <stop offset="0.52" stop-color="#da745e" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#172b2b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e89078"/>
+      <stop offset="0.48" stop-color="#f5e4c9"/>
+      <stop offset="1" stop-color="#92c4ae"/>
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="22" stdDeviation="24" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#background)"/>
+  <circle cx="512" cy="470" r="390" fill="url(#glow)"/>
+
+  <g fill="none" stroke-linecap="round" filter="url(#shadow)">
+    <path d="M198 508 C238 508 238 444 278 444 C318 444 318 580 358 580 C398 580 398 370 438 370 C478 370 478 654 518 654 C558 654 558 302 598 302 C638 302 638 722 678 722 C718 722 718 430 758 430 C798 430 798 508 826 508" stroke="url(#wave)" stroke-width="34"/>
+    <path d="M228 622 C260 622 260 590 292 590 M732 622 C764 622 764 590 796 590" stroke="#92c4ae" stroke-opacity="0.52" stroke-width="12"/>
+  </g>
+
+  <circle cx="512" cy="512" r="390" fill="none" stroke="#f5e4c9" stroke-opacity="0.10" stroke-width="3"/>
+  <text x="512" y="850" text-anchor="middle" fill="#f5e4c9" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="12">HUSH COMPANION</text>
+  <circle cx="512" cy="890" r="6" fill="#da745e"/>
+</svg>

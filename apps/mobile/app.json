@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Hush Companion",
+    "slug": "hush-voice-companion",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "hush",
+    "plugins": ["expo-router"],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.hush.voicecompanion" },
+    "android": { "package": "com.hush.voicecompanion" }
+  }
+}

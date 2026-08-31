@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+api-server/.env
+api-server/.env.*
+!api-server/.env.example
+
+# Python environments and caches
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Build and test output
+dist/
+coverage/
+.vite/
+
+# Local generated audio, captures, and editor/system files
+*.wav
+*.har
+.DS_Store

@@ -1,0 +1,5 @@
+fastapi
+kokoro
+numpy
+soundfile
+uvicorn
