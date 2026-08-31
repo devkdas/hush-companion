@@ -1,5 +1,9 @@
 # Hush Companion
 
+<p align="center">
+  <img src="docs/hush-companion-logo.svg" alt="Hush Companion logo" width="800" />
+</p>
+
 Hush Companion is a local-first voice companion with four conversation modes:
 
 - **Vent** — talk freely and receive supportive reflections.
