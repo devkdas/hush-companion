@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 export function preparePagesHtml(html, basePath = '/hush-companion/') {
   return html
-    .replace('src="/src/main.tsx"', `src="${basePath}src/main.tsx"`)
+    .replace(/src="\/src\/main\.tsx"/g, `src="${basePath}src/main.tsx"`)
     .replaceAll('href="favicon.svg"', `href="${basePath}favicon.svg"`)
     .replaceAll('href="/favicon.svg"', `href="${basePath}favicon.svg"`);
 }
