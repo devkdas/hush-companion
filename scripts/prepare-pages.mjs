@@ -1,7 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
 export function preparePagesHtml(html, basePath = '/hush-companion/') {
-  return html.replaceAll('href="/favicon.svg"', `href="${basePath}favicon.svg"`);
+  return html
+    .replace('src="/src/main.tsx"', `src="${basePath}src/main.tsx"`)
+    .replaceAll('href="favicon.svg"', `href="${basePath}favicon.svg"`)
+    .replaceAll('href="/favicon.svg"', `href="${basePath}favicon.svg"`);
 }
 
 if (process.argv[1]?.endsWith('prepare-pages.mjs')) {
