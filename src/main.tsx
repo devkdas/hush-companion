@@ -9,7 +9,7 @@ import {
 import './styles.css';
 
 import { streamAI, type AIConfig, type ChatMessage, type ConversationSettings } from './ollama';
-import { loadAIConfig, saveAIConfig } from './ai-config';
+import { hasGeminiApiKey, loadAIConfig, saveAIConfig } from './ai-config';
 import {
   createRecognition, createVoiceGate, isSpeechRecognitionSupported,
   speak, speakChunk, speakLocal, stopSpeaking, type BrowserSpeechRecognition,
@@ -442,7 +442,20 @@ export default function App() {
           onEmotion={updateEmotion} onStyle={setStyle}
           onTopic={mode === 'debate' ? setDebatePrompt : setTopic}
           onBack={() => { speechRunRef.current += 1; navigate('mode'); setSpeaking(false); stopSpeaking(); ttsQueueRef.current = Promise.resolve(); }}
-          onContinue={() => mode === 'listen' ? startListenSession() : navigate('call')}
+          onContinue={() => {
+            if (mode === 'listen') {
+              startListenSession();
+              return;
+            }
+            const hasAIProvider = aiConfig.provider === 'ollama'
+              ? Boolean(aiConfig.ollamaBaseUrl?.trim())
+              : hasGeminiApiKey(aiConfig);
+            if (!hasAIProvider) {
+              setShowAISettings(true);
+              return;
+            }
+            navigate('call');
+          }}
         />
       )}
 

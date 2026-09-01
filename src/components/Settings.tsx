@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { geminiApiKeyIssue, hasGeminiApiKey, maskedApiKey, providerLabel } from '../ai-config';
+import { clearGeminiApiKey, geminiApiKeyIssue, hasGeminiApiKey, maskedApiKey, providerLabel } from '../ai-config';
 import type { AIConfig } from '../ollama';
 
 interface AISettingsProps {
@@ -11,6 +11,11 @@ interface AISettingsProps {
 
 export function AISettings({ config, onSave, onClose }: AISettingsProps) {
   const [draft, setDraft] = useState<AIConfig>(config);
+  const clearKey = () => {
+    const cleared = clearGeminiApiKey();
+    setDraft(cleared);
+    onSave(cleared);
+  };
   const geminiConfigured = hasGeminiApiKey(draft);
   const geminiKeyIssue = geminiApiKeyIssue(draft.geminiApiKey);
   const canSave = draft.provider !== 'gemini' || !geminiKeyIssue;
@@ -57,7 +62,7 @@ export function AISettings({ config, onSave, onClose }: AISettingsProps) {
                 )}{' '}
                 {!geminiKeyIssue && "Your key stays in this browser's local storage and is sent directly to Google."}
               </p>
-              <button className="secondary-button" type="button" onClick={() => setDraft({ ...draft, geminiApiKey: '' })} disabled={!geminiConfigured}>
+              <button className="secondary-button" type="button" onClick={clearKey} disabled={!geminiConfigured}>
                 Clear saved key
               </button>
             </>
