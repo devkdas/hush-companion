@@ -3,6 +3,14 @@ import { ChatMessage } from './conversation';
 export type AppMode = 'vent' | 'debate' | 'listen' | 'wellness';
 export type AppScreen = 'welcome' | 'mode' | 'setup' | 'call' | 'summary';
 
+export function appPath(pathname: string, basePath: string): string {
+  return pathname.startsWith(basePath) ? pathname.slice(basePath.length) || '/' : pathname;
+}
+
+export function publicPath(pathname: string, basePath: string): string {
+  return `${basePath}${pathname === '/' ? '' : pathname}`;
+}
+
 export function modeFromPath(pathname: string): AppMode | null {
   const value = pathname.replace(/^\/+/, '').split('/')[0] as AppMode;
   return value === 'vent' || value === 'debate' || value === 'listen' || value === 'wellness' ? value : null;

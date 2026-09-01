@@ -1,7 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { contextPath, modeFromPath, pathFor, transcriptText } from '../src/app-helpers';
+import { appPath, contextPath, modeFromPath, pathFor, publicPath, transcriptText } from '../src/app-helpers';
 
 describe('app helpers', () => {
+  it('normalizes paths under the GitHub Pages repository base', () => {
+    const base = '/hush-companion';
+    expect(appPath('/hush-companion/', base)).toBe('/');
+    expect(appPath('/hush-companion/modes', base)).toBe('/modes');
+    expect(appPath('/hush-companion/vent/sad', base)).toBe('/vent/sad');
+    expect(publicPath('/', base)).toBe('/hush-companion');
+    expect(publicPath('/modes', base)).toBe('/hush-companion/modes');
+  });
+
+  it('supports the local root base path', () => {
+    expect(appPath('/modes', '')).toBe('/modes');
+    expect(publicPath('/', '')).toBe('');
+  });
   it('recognizes supported mode paths and rejects other paths', () => {
     expect(modeFromPath('/vent')).toBe('vent');
     expect(modeFromPath('/debate/setup')).toBe('debate');
