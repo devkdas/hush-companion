@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createRecognition, preferredVoice, speakChunk, stopSpeaking } from '../src/voice';
+import { createRecognition, isSpeechRecognitionSupported, preferredVoice, speakChunk, stopSpeaking } from '../src/voice';
 
 describe('voice playback', () => {
   afterEach(() => {
@@ -70,5 +70,26 @@ describe('voice playback', () => {
     expect(cancel).toHaveBeenCalledOnce();
     expect(finished).toBe(1);
     expect(utterance).toBeDefined();
+  });
+});
+
+describe('isSpeechRecognitionSupported', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns true when SpeechRecognition is available', () => {
+    vi.stubGlobal('window', { SpeechRecognition: class {} });
+    expect(isSpeechRecognitionSupported()).toBe(true);
+  });
+
+  it('returns true when only webkitSpeechRecognition is available', () => {
+    vi.stubGlobal('window', { webkitSpeechRecognition: class {} });
+    expect(isSpeechRecognitionSupported()).toBe(true);
+  });
+
+  it('returns false when neither SpeechRecognition nor webkitSpeechRecognition exists', () => {
+    vi.stubGlobal('window', {});
+    expect(isSpeechRecognitionSupported()).toBe(false);
   });
 });
