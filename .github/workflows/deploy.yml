@@ -41,7 +41,7 @@ jobs:
           grep -q 'src="/hush-companion/assets/' dist/index.html
           grep -q 'href="/hush-companion/favicon.svg"' dist/index.html
           ! grep -q 'src="/src/main.tsx"' dist/index.html
-          ! grep -q 'href="favicon.svg"' dist/index.html
+          ! grep -qE 'href="favicon\.svg"|href="/favicon\.svg"' dist/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
