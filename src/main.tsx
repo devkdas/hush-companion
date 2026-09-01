@@ -32,10 +32,6 @@ import { modeStyles } from './types';
 
 // ─── Path helpers ────────────────────────────────────────────────────────────
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
-const appPath = (pathname: string) =>
-  pathname.startsWith(basePath) ? pathname.slice(basePath.length) || '/' : pathname;
-const publicPath = (pathname: string) =>
-  `${basePath}${pathname === '/' ? '' : pathname}`;
 
 // ─── AI send helper ──────────────────────────────────────────────────────────
 async function send(
