@@ -25,3 +25,4 @@ coverage/
 *.wav
 *.har
 .DS_Store
+.serena/
