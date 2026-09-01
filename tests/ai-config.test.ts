@@ -75,8 +75,13 @@ describe('AI configuration helpers', () => {
   it('warns when a saved value is not a Google AI Studio key', () => {
     expect(geminiApiKeyIssue('{"importEngagement":{}}')).toContain('not a Google AI Studio API key');
     expect(geminiApiKeyIssue('test-gemini-key-value')).toBeNull();
-    expect(geminiApiKeyIssue('test-gemini-key-value')).toBeNull();
     expect(geminiApiKeyIssue(undefined)).toBeNull();
+    // spaces branch
+    expect(geminiApiKeyIssue('key with spaces in it')).toContain('without spaces');
+    // non-string branch
+    expect(geminiApiKeyIssue(42)).toContain('not text');
+    // JSON array branch
+    expect(geminiApiKeyIssue('["token"]')).toContain('JSON or another data export');
   });
 
   it('masks configured keys without exposing the full value', () => {

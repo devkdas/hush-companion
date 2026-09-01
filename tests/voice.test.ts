@@ -31,6 +31,11 @@ describe('voice playback', () => {
     expect(onEnd).toHaveBeenCalledOnce();
   });
 
+  it('returns null when SpeechRecognition is not supported', () => {
+    vi.stubGlobal('window', {});
+    expect(createRecognition(() => {}, () => {})).toBeNull();
+  });
+
   it('selects the requested gendered voice and falls back to an English voice', () => {
     const voices = [
       { name: 'Alex', lang: 'en-US' },
@@ -41,6 +46,20 @@ describe('voice playback', () => {
     expect(preferredVoice({ profile: 'masculine', speed: 'natural', tone: 'warm' }, voices)?.name).toBe('Alex');
     expect(preferredVoice({ profile: 'feminine', speed: 'natural', tone: 'warm' }, voices)?.name).toBe('Samantha');
     expect(preferredVoice({ profile: 'system', speed: 'natural', tone: 'warm' }, voices)?.name).toBe('Alex');
+  });
+
+  it('falls back to non-English voices when no English voices are available', () => {
+    const voices = [
+      { name: 'Marie', lang: 'fr-FR' },
+      { name: 'Carlos', lang: 'es-ES' },
+    ] as SpeechSynthesisVoice[];
+
+    // No English voice matches — falls back to first available
+    expect(preferredVoice({ profile: 'system', speed: 'natural', tone: 'warm' }, voices)?.name).toBe('Marie');
+  });
+
+  it('returns undefined when the voice list is empty', () => {
+    expect(preferredVoice({ profile: 'system', speed: 'natural', tone: 'warm' }, [])).toBeUndefined();
   });
 
   it('settles and cancels an active browser utterance when playback stops', async () => {

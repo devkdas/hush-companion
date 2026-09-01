@@ -56,4 +56,26 @@ describe('conversation rules', () => {
     const response = localFallback({ mode: 'vent', emotion: 'Angry', responseStyle: 'Just listen' });
     expect(response).toContain('here with you');
   });
+
+  it('returns a listen fallback referencing the topic', () => {
+    const response = localFallback({ mode: 'listen', emotion: 'calm', responseStyle: 'Calm explanation', topic: 'the Roman Empire' });
+    expect(response).toContain('the Roman Empire');
+  });
+
+  it('returns a listen fallback with generic topic when none provided', () => {
+    const response = localFallback({ mode: 'listen', emotion: 'calm', responseStyle: 'Calm explanation' });
+    expect(response).toContain('that topic');
+  });
+
+  it('returns a debate fallback with actionable framing', () => {
+    const response = localFallback({ mode: 'debate', emotion: 'calm', responseStyle: 'Balanced' });
+    expect(response).toContain('strongest point');
+  });
+
+  it('creates a Listen prompt with topic and style context', () => {
+    const prompt = systemPrompt({ mode: 'listen', emotion: 'calm', responseStyle: 'Storytelling', topic: 'black holes', listenStyle: 'story' });
+    expect(prompt).toContain('black holes');
+    expect(prompt).toContain('story');
+    expect(prompt).toContain('Do not ask the listener questions');
+  });
 });
