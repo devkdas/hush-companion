@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <script>
       // GitHub Pages serves this file for client-side routes.
-      // With a custom domain, base is '/' so no repo prefix needed.
-      const requested = window.location.pathname;
-      window.location.replace(`/?path=${encodeURIComponent(requested + window.location.search + window.location.hash)}`);
+      // Strip the /hush-companion/ base prefix, then redirect to /?path=...
+      const base = '/hush-companion';
+      const requested = window.location.pathname.startsWith(base)
+        ? window.location.pathname.slice(base.length) || '/'
+        : window.location.pathname;
+      window.location.replace(`${base}/?path=${encodeURIComponent(requested + window.location.search + window.location.hash)}`);
     </script>
   </head>
   <body></body>
