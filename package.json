@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "description": "A calm, voice-first AI companion for reflection, conversation practice, learning, and everyday wellbeing.",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/devkdas/hush-companion.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devkdas/hush-companion.git"
+  },
   "homepage": "https://github.com/devkdas/hush-companion",
   "type": "module",
   "scripts": {
@@ -24,6 +27,6 @@
   "devDependencies": {
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
-    "vitest": "latest"
+    "vitest": "^4.1.11"
   }
 }
