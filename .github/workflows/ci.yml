@@ -31,7 +31,7 @@ jobs:
         run: npm run typecheck
 
       - name: Run unit tests
-        run: npm test
+        run: npm test -- --reporter=verbose
 
       - name: Build production bundle
         run: npm run build
