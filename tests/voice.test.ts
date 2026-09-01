@@ -21,6 +21,7 @@ describe('voice playback', () => {
       stop = vi.fn();
     }
     vi.stubGlobal('window', { SpeechRecognition: FakeRecognition });
+    vi.stubGlobal('navigator', { language: 'en-US' });
 
     const recognition = createRecognition(onText, onEnd);
     recognition?.onresult?.({ results: [{ 0: { transcript: 'Hello Hush Companion' } }] });

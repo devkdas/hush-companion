@@ -23,7 +23,7 @@ export function isSpeechRecognitionSupported(): boolean {
 export function createRecognition(onText: (text: string) => void, onEnd: () => void): BrowserSpeechRecognition | null {
   const Constructor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
   if (!Constructor) return null;
-  const recognition = new Constructor(); recognition.continuous = false; recognition.interimResults = false; recognition.lang = navigator.language || 'en-US';
+  const recognition = new Constructor(); recognition.continuous = false; recognition.interimResults = false; recognition.lang = (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
   recognition.onresult = (event) => onText(event.results[0][0].transcript); recognition.onend = onEnd; recognition.onerror = onEnd; return recognition;
 }
 
