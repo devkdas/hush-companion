@@ -72,7 +72,7 @@ Subject: Exploring a private voice wellness pilot at [Company]
 
 Hi [Name],
 
-I’m Kartheek Das, the creator of Hush Companion, an open-source voice-first AI companion for reflection, conversation practice, learning, and everyday workday resets.
+I’m devkdas, the creator of Hush Companion, an open-source voice-first AI companion for reflection, conversation practice, learning, and everyday workday resets.
 
 I’m reaching out because [specific reason you chose this company or mention a relevant initiative]. I’m exploring whether a privacy-conscious, non-clinical tool could support small wellbeing moments without presenting itself as therapy or medical care.
 
@@ -85,7 +85,7 @@ Would you be open to a brief 15-minute conversation? If this is not your area, I
 
 Best regards,
 
-Kartheek Das
+devkdas
 Creator, Hush Companion
 hello.hushcompanion@gmail.com
 https://github.com/devkdas
@@ -100,7 +100,7 @@ Subject: Open-source voice AI prototype for a private pilot
 
 Hi [Name],
 
-I’m Kartheek Das, creator of Hush Companion:
+I’m devkdas, creator of Hush Companion:
 https://github.com/devkdas/hush-companion
 
 Hush Companion is a voice-first AI prototype for reflection, conversation practice, learning, and everyday workday resets. It supports local Ollama and user-supplied Google Gemini, with optional local voice generation.
@@ -111,7 +111,7 @@ Would a short 15-minute technical discovery call be relevant for [Company]? If n
 
 Best regards,
 
-Kartheek Das
+devkdas
 Creator, Hush Companion
 hello.hushcompanion@gmail.com
 https://github.com/devkdas
@@ -133,7 +133,7 @@ Just following up on my note about Hush Companion. I’m looking for early feedb
 Would a brief conversation be useful, or is there someone else I should contact?
 
 Best,
-Kartheek
+devkdas
 ```
 
 ## Outreach checklist
@@ -156,7 +156,7 @@ Suggested signature:
 ```text
 Best regards,
 
-Kartheek Das
+devkdas
 Creator, Hush Companion
 A calm, voice-first AI companion for thinking out loud.
 

@@ -130,6 +130,16 @@ cloudflared/         Example tunnel configuration
 - A modern browser with microphone support for voice input
 - [Ollama](https://ollama.com/) only if you choose the local Ollama provider
 
+## Deploy to GitHub Pages
+
+This repository is configured for the project site `https://devkdas.github.io/hush-companion/`.
+
+1. In GitHub, open **Settings → Pages** and set **Source** to **GitHub Actions**.
+2. Push to `main` (or run the **Deploy to GitHub Pages** workflow manually).
+3. Open the site URL after the workflow completes.
+
+The Vite base path, static assets, client-side routes, and GitHub Pages fallback are configured for this repository name. GitHub Pages cannot provide the local Ollama or Kokoro services, but browser speech and the Gemini BYO-key flow work from the static site.
+
 ## Quick start
 
 Install the web dependencies and start Vite:
