@@ -1,8 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-const file = 'dist/index.html';
-let html = await readFile(file, 'utf8');
-html = html
-  .replace('src="/src/main.tsx"', 'src="/hush-companion/src/main.tsx"')
-  .replaceAll('href="/favicon.svg"', 'href="/hush-companion/favicon.svg"');
-await writeFile(file, html);
+export function preparePagesHtml(html, basePath = '/hush-companion/') {
+  return html
+    .replace('src="/src/main.tsx"', `src="${basePath}src/main.tsx"`)
+    .replaceAll('href="/favicon.svg"', `href="${basePath}favicon.svg"`);
+}
+
+if (process.argv[1]?.endsWith('prepare-pages.mjs')) {
+  const file = 'dist/index.html';
+  const html = await readFile(file, 'utf8');
+  await writeFile(file, preparePagesHtml(html));
+}
