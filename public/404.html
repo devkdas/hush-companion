@@ -4,11 +4,9 @@
     <meta charset="UTF-8" />
     <script>
       // GitHub Pages serves this file for client-side routes.
-      const repository = '/hush-companion';
-      const requested = window.location.pathname.startsWith(repository)
-        ? window.location.pathname.slice(repository.length)
-        : window.location.pathname;
-      window.location.replace(`${repository}/?path=${encodeURIComponent(requested + window.location.search + window.location.hash)}`);
+      // With a custom domain, base is '/' so no repo prefix needed.
+      const requested = window.location.pathname;
+      window.location.replace(`/?path=${encodeURIComponent(requested + window.location.search + window.location.hash)}`);
     </script>
   </head>
   <body></body>
