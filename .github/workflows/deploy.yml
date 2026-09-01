@@ -37,11 +37,25 @@ jobs:
           VITE_BASE_PATH: /hush-companion/
 
       - name: Verify generated Pages paths
-        run: |
-          grep -q 'src="/hush-companion/assets/' dist/index.html
-          grep -q 'href="/hush-companion/favicon.svg"' dist/index.html
-          ! grep -q 'src="/src/main.tsx"' dist/index.html
-          ! grep -qE '(^|[[:space:]])href="(favicon\.svg|/favicon\.svg)"' dist/index.html
+        run: node --input-type=module -e '
+          import { readFileSync } from "node:fs";
+          const html = readFileSync("dist/index.html", "utf8");
+          const required = [
+            "/hush-companion/assets/",
+            "/hush-companion/favicon.svg",
+          ];
+          const forbidden = [
+            "src=\"/src/main.tsx\"",
+            "href=\"favicon.svg\"",
+            "href=\"/favicon.svg\"",
+          ];
+          for (const value of required) {
+            if (!html.includes(value)) throw new Error(`Missing generated path: ${value}`);
+          }
+          for (const value of forbidden) {
+            if (html.includes(value)) throw new Error(`Forbidden source path: ${value}`);
+          }
+        '
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
