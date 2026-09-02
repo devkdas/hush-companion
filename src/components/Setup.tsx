@@ -35,19 +35,22 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
       'Help me feel understood': "Empathy and validation for what you're going through.",
     },
     debate: {
-      'Challenge my thinking': 'Test assumptions and expose weak points respectfully.',
-      'Help me prepare': 'Practice clear responses for the conversation ahead.',
-      'Keep it balanced': 'Explore both sides without pushing you toward one answer.',
+      Gentle: 'A soft sounding board that asks easy, supportive questions.',
+      Balanced: 'A fair mix of support and constructive pushback.',
+      Challenging: 'Tough questions to rigorously stress-test your perspective.',
     },
     listen: {
-      'A short story': 'A focused narrative with a calm beginning and end.',
-      'A curious conversation': 'An open-ended exchange full of thoughtful questions.',
-      'A guided reflection': 'A gentle prompt to help you slow down and notice what matters.',
+      'Calm explanation': 'A soothing, straightforward breakdown of the facts.',
+      Storytelling: 'An engaging, narrative-driven journey through the topic.',
+      'News-style overview': 'Key highlights delivered in a structured, concise briefing.',
+      'Two sides': 'A balanced look at opposing perspectives on the issue.',
     },
     wellness: {
-      'Ground me': 'Simple sensory prompts to help you reconnect with the present.',
-      'Help me reflect': 'Thoughtful questions to notice patterns and possibilities.',
-      'Give me one next step': 'A small, practical action you can take today.',
+      'Mood check-in': 'A quick pulse-check on your current emotional state.',
+      'Grounding exercise': 'Guided steps to help you center yourself in the present.',
+      'Workday reset': 'A brief mental break to transition between tasks.',
+      'Reflect and journal': 'Open-ended prompts to help you process your thoughts.',
+      'Prepare for a conversation': 'Mental rehearsal and tips for an upcoming talk.',
     },
   };
 
@@ -101,7 +104,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
             <span>
               <strong>{item}</strong>
               <small>
-                {styleDescriptions[mode][item] ?? 'Choose the kind of support that feels right for you.'}
+                {styleDescriptions[mode][item]}
               </small>
             </span>
           </button>
