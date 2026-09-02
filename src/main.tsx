@@ -154,6 +154,7 @@ export default function App() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const messagesRef = useRef<ChatMessage[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [aiConfig, setAIConfig] = useState<AIConfig>(() => loadAIConfig());
 
@@ -169,6 +170,7 @@ export default function App() {
   // helpers
   const setCallPhase = (phase: CallPhase) => { callStateRef.current = phase; setCallState(phase); };
   const updateAIConfig = (next: AIConfig) => { setAIConfig(next); saveAIConfig(next); };
+  const updateMessages = (next: ChatMessage[]) => { messagesRef.current = next; setMessages(next); };
   const settings: ConversationSettings = {
     mode, emotion, responseStyle: style,
     topic: mode === 'debate' ? debatePrompt : topic,
@@ -228,7 +230,7 @@ export default function App() {
       (text) => {
         setListening(false);
         setCallPhase('thinking');
-        void send(text, settings, messages, setMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
+        void send(text, settings, messagesRef.current, updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
           () => { if (conversationActiveRef.current) scheduleListening(); },
           () => setCallPhase('speaking'),
         );
@@ -282,7 +284,7 @@ export default function App() {
     void send(
       `Begin a short spoken introduction about ${topic || 'the selected topic'}.`,
       { ...settings, mode: 'listen', topic: topic || 'the selected topic' },
-      [], setMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
+      [], updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
     );
   };
 
@@ -297,7 +299,7 @@ export default function App() {
     voiceGateRef.current?.stop();
     recognitionRef.current?.stop();
     navigate('welcome');
-    setMessages([]); setElapsed(0); setTopic(''); setDebatePrompt('');
+    messagesRef.current = []; setMessages([]); setElapsed(0); setTopic(''); setDebatePrompt('');
     setListening(false); setSpeaking(false);
     stopSpeaking();
     ttsQueueRef.current = Promise.resolve();
@@ -309,7 +311,7 @@ export default function App() {
     voiceGateRef.current?.stop();
     recognitionRef.current?.stop();
     stopSpeaking();
-    setMessages([]); setElapsed(0); setListening(false); setSpeaking(false);
+    messagesRef.current = []; setMessages([]); setElapsed(0); setListening(false); setSpeaking(false);
     navigate('setup');
   };
 
@@ -357,7 +359,7 @@ export default function App() {
 
   const downloadTranscript = () => {
     if (!messages.length) return;
-    const blob = new Blob([transcriptText(messages)], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([transcriptText(messagesRef.current)], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -379,7 +381,7 @@ export default function App() {
           <button className="site-link" type="button" onClick={() => setInfoPanel('docs')}>Docs</button>
           <button className="site-link" type="button" onClick={() => setInfoPanel('pricing')}>Pricing</button>
           <button className="site-link" type="button" onClick={() => setInfoPanel('contact')}>Contact us</button>
-          <a className="site-link" href="https://github.com/sponsors/devkdas" target="_blank" rel="noreferrer">Support the developer</a>
+          <a className="site-link support-link" href="https://github.com/sponsors/devkdas" target="_blank" rel="noreferrer">Support the developer</a>
           <button className="voice-settings-button" type="button" onClick={() => setShowVoiceSettings(true)}>Voice</button>
           <button className="ai-settings-button" type="button" onClick={() => setShowAISettings(true)}>AI settings</button>
           <button className="icon-button" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => setDark((v) => { const next = !v; localStorage.setItem('hush-theme', next ? 'dark' : 'light'); return next; })}>
@@ -472,7 +474,7 @@ export default function App() {
           <h2>{mode === 'listen' ? <>You made room<br /><em>to listen.</em></> : <>You showed up<br /><em>for yourself.</em></>}</h2>
           <p className="summary-intro">Thanks for spending this time with Hush Companion.</p>
           <div className="summary-actions">
-            <button className="secondary-button" onClick={downloadTranscript} disabled={!messages.length}>
+            <button className="secondary-button" onClick={downloadTranscript} disabled={!messagesRef.current.length}>
               <FileText size={15} /> Download transcript
             </button>
             <button className="primary-button" onClick={() => confirmLeave(talkAgain)}>Talk again</button>
