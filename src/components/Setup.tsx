@@ -28,12 +28,34 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
                           'Choose the idea, decision, or conversation you want to test.';
 
   const isTopicMode = mode === 'listen' || mode === 'debate';
+  const styleDescriptions: Record<Mode, Record<string, string>> = {
+    vent: {
+      'Just listen': 'A safe space to vent, with no advice given.',
+      'Help me think it through': 'Collaborative problem-solving and gentle nudges.',
+      'Help me feel understood': "Empathy and validation for what you're going through.",
+    },
+    debate: {
+      'Challenge my thinking': 'Test assumptions and expose weak points respectfully.',
+      'Help me prepare': 'Practice clear responses for the conversation ahead.',
+      'Keep it balanced': 'Explore both sides without pushing you toward one answer.',
+    },
+    listen: {
+      'A short story': 'A focused narrative with a calm beginning and end.',
+      'A curious conversation': 'An open-ended exchange full of thoughtful questions.',
+      'A guided reflection': 'A gentle prompt to help you slow down and notice what matters.',
+    },
+    wellness: {
+      'Ground me': 'Simple sensory prompts to help you reconnect with the present.',
+      'Help me reflect': 'Thoughtful questions to notice patterns and possibilities.',
+      'Give me one next step': 'A small, practical action you can take today.',
+    },
+  };
 
   return (
     <section className="page-shell narrow">
       <button className="back-button" onClick={onBack}><ArrowLeft size={15} /> Change mode</button>
       <div className="section-heading">
-        <div className="eyebrow">STEP 2 OF 3 · {mode.toUpperCase()}</div>
+        <div className="eyebrow">{mode === 'wellness' ? 'STEP 1 OF 3 · CHECK-IN' : `STEP 2 OF 3 · ${mode.toUpperCase()}`}</div>
         <h2>{heading}</h2>
         <p>{description}</p>
       </div>
@@ -79,10 +101,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
             <span>
               <strong>{item}</strong>
               <small>
-                {mode === 'vent'     ? 'Hush Companion will adapt its support.' :
-                 mode === 'debate'   ? 'Hush Companion will adapt its challenge.' :
-                 mode === 'wellness' ? 'Hush Companion will adapt its check-in.' :
-                                       'Hush Companion will adapt its narration.'}
+                {styleDescriptions[mode][item] ?? 'Choose the kind of support that feels right for you.'}
               </small>
             </span>
           </button>

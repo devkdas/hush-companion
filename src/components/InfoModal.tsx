@@ -37,7 +37,6 @@ const content = {
     items: [
       { label: 'Email:', linkLabel: 'hello.hushcompanion@gmail.com', href: 'mailto:hello.hushcompanion@gmail.com' },
       { label: 'Contact developer on GitHub', href: 'https://github.com/devkdas' },
-      { label: 'Support the developer', href: 'https://github.com/sponsors/devkdas' },
     ],
   },
 } satisfies Record<InfoPanel, { eyebrow: string; title: React.ReactNode; body: string; items: unknown[] }>;

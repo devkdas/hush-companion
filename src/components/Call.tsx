@@ -36,7 +36,7 @@ export function Call({ mode, duration, muted, listening, speaking, callState, me
         <div className="call-state">{stateLabel}</div>
         {messages.length > 0 && (
           <div className="transcript">
-            {messages.slice(-2).map((msg, i) => (
+            {messages.map((msg, i) => (
               <p key={`${msg.role}-${i}`}>
                 <b>{msg.role === 'user' ? 'You:' : 'Hush Companion:'}</b>{msg.content}
               </p>

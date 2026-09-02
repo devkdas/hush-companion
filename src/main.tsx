@@ -379,6 +379,7 @@ export default function App() {
           <button className="site-link" type="button" onClick={() => setInfoPanel('docs')}>Docs</button>
           <button className="site-link" type="button" onClick={() => setInfoPanel('pricing')}>Pricing</button>
           <button className="site-link" type="button" onClick={() => setInfoPanel('contact')}>Contact us</button>
+          <a className="site-link" href="https://github.com/sponsors/devkdas" target="_blank" rel="noreferrer">Support the developer</a>
           <button className="voice-settings-button" type="button" onClick={() => setShowVoiceSettings(true)}>Voice</button>
           <button className="ai-settings-button" type="button" onClick={() => setShowAISettings(true)}>AI settings</button>
           <button className="icon-button" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => setDark((v) => { const next = !v; localStorage.setItem('hush-theme', next ? 'dark' : 'light'); return next; })}>

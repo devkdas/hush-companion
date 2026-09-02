@@ -44,6 +44,8 @@ describe('app helpers', () => {
     expect(transcriptText([
       { role: 'user', content: 'Hello' },
       { role: 'assistant', content: 'Hi there' },
-    ])).toBe('Hush Companion conversation\n\nYou: Hello\n\nHush Companion: Hi there');
+      { role: 'user', content: 'A longer follow-up' },
+      { role: 'assistant', content: 'A complete response' },
+    ])).toBe('Hush Companion conversation\n\nYou: Hello\n\nHush Companion: Hi there\n\nYou: A longer follow-up\n\nHush Companion: A complete response');
   });
 });
