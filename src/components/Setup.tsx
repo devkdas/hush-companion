@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 import type { Mode } from '../types';
 import { debatePrompts, emotions, modeStyles } from '../types';
 
@@ -15,6 +16,21 @@ interface SetupProps {
 }
 
 export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic, onBack, onContinue }: SetupProps) {
+  const [error, setError] = useState(false);
+
+  const handleContinue = () => {
+    if ((mode === 'listen' || mode === 'debate') && !topic.trim()) {
+      setError(true);
+      return;
+    }
+    setError(false);
+    onContinue();
+  };
+
+  const handleTopicChange = (val: string) => {
+    setError(false);
+    onTopic(val);
+  };
   const heading =
     mode === 'listen' ? (<>What should I<br /><em>talk about?</em></>) :
     mode === 'vent'   ? (<>What's weighing<br /><em>on you?</em></>) :
@@ -69,9 +85,15 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
               <span>{mode === 'debate' ? 'What should we work through?' : 'Topic'}</span>
               <input
                 value={topic}
-                onChange={(e) => onTopic(e.target.value)}
+                onChange={(e) => handleTopicChange(e.target.value)}
                 placeholder={mode === 'debate' ? 'Should I ask for a promotion?' : 'The history of space exploration'}
+                className={error ? 'input-error' : ''}
               />
+              {error && (
+                <span className="error-message">
+                  {mode === 'debate' ? 'Please enter a topic to work through.' : 'Please enter a topic to talk about.'}
+                </span>
+              )}
             </label>
             {mode === 'debate' && (
               <div className="prompt-list">
@@ -81,7 +103,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
                     type="button"
                     key={prompt}
                     className={topic === prompt ? 'prompt-chip selected' : 'prompt-chip'}
-                    onClick={() => onTopic(prompt)}
+                    onClick={() => handleTopicChange(prompt)}
                   >
                     {prompt}
                   </button>
@@ -116,7 +138,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
         ))}
       </div>
       <div className="setup-actions">
-        <button className="primary-button next-button" onClick={onContinue}>
+        <button className="primary-button next-button" onClick={handleContinue}>
           Continue <ArrowRight size={17} />
         </button>
       </div>
