@@ -374,7 +374,7 @@ export default function App() {
       <header className="topbar">
         <button className="brand" onClick={() => confirmLeave(reset)}>
           <span className="brand-mark"><Waves size={17} /></span>
-          hush companion<span className="brand-dot">.</span>
+          <span>hush companion<span className="brand-dot">.</span></span>
         </button>
         <div className="top-actions">
           <span className="availability"><span className="status-dot" /> Always here</span>
