@@ -472,7 +472,7 @@ export default function App() {
         <section className="page-shell summary">
           {/* Curved arrow pointing to "Support the developer" nav link */}
           <div className="support-arrow-hint" aria-hidden="true">
-            <span className="support-arrow-label">If this helped,<br />consider supporting ✨</span>
+            <span className="support-arrow-label">If this helped,<br />consider supporting</span>
             <svg className="support-arrow-svg" viewBox="0 0 90 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M 10 90 C 10 40, 60 20, 78 8"
