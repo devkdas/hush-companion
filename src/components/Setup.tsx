@@ -55,9 +55,9 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
   };
 
   return (
-    <section className="page-shell narrow">
+    <section className={`page-shell narrow setup-screen setup-${mode}`}>
       <button className="back-button" onClick={onBack}><ArrowLeft size={15} /> Change mode</button>
-      <div className="section-heading">
+      <div className="section-heading setup-heading">
         <div className="eyebrow">{mode === 'wellness' ? 'STEP 1 OF 3 · CHECK-IN' : `STEP 2 OF 3 · ${mode.toUpperCase()}`}</div>
         <h2>{heading}</h2>
         <p>{description}</p>
