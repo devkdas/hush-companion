@@ -62,41 +62,46 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
         <h2>{heading}</h2>
         <p>{description}</p>
       </div>
-      {isTopicMode ? (
-        <>
-          <label className="topic-field">
-            <span>{mode === 'debate' ? 'What should we work through?' : 'Topic'}</span>
-            <input
-              value={topic}
-              onChange={(e) => onTopic(e.target.value)}
-              placeholder={mode === 'debate' ? 'Should I ask for a promotion?' : 'The history of space exploration'}
-            />
-          </label>
-          {mode === 'debate' && (
-            <div className="prompt-list">
-              <span className="prompt-label">Or choose a starting point</span>
-              {debatePrompts.map((prompt) => (
-                <button
-                  type="button"
-                  key={prompt}
-                  className={topic === prompt ? 'prompt-chip selected' : 'prompt-chip'}
-                  onClick={() => onTopic(prompt)}
-                >
-                  {prompt}
+      <div className="setup-input-area">
+        {isTopicMode ? (
+          <>
+            <label className="topic-field">
+              <span>{mode === 'debate' ? 'What should we work through?' : 'Topic'}</span>
+              <input
+                value={topic}
+                onChange={(e) => onTopic(e.target.value)}
+                placeholder={mode === 'debate' ? 'Should I ask for a promotion?' : 'The history of space exploration'}
+              />
+            </label>
+            {mode === 'debate' && (
+              <div className="prompt-list">
+                <span className="prompt-label">Or choose a starting point</span>
+                {debatePrompts.map((prompt) => (
+                  <button
+                    type="button"
+                    key={prompt}
+                    className={topic === prompt ? 'prompt-chip selected' : 'prompt-chip'}
+                    onClick={() => onTopic(prompt)}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <span className="input-section-label">Choose a starting point</span>
+            <div className="emotion-grid">
+              {emotions.map((item) => (
+                <button type="button" key={item} className={emotion === item ? 'emotion selected' : 'emotion'} onClick={() => onEmotion(item)}>
+                  {item}
                 </button>
               ))}
             </div>
-          )}
-        </>
-      ) : (
-        <div className="emotion-grid">
-          {emotions.map((item) => (
-            <button key={item} className={emotion === item ? 'emotion selected' : 'emotion'} onClick={() => onEmotion(item)}>
-              {item}
-            </button>
-          ))}
-        </div>
-      )}
+          </>
+        )}
+      </div>
       <div className="choice-list">
         {modeStyles[mode].map((item) => (
           <button key={item} className={style === item ? 'choice selected' : 'choice'} onClick={() => onStyle(item)}>
