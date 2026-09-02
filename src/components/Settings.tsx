@@ -100,8 +100,8 @@ interface VoiceSettingsProps {
 export function VoiceSettings({ voice, speed, onVoice, onSpeed, onClose }: VoiceSettingsProps) {
   const voiceOptions = [
     { value: 'system' as const, label: 'System voice', description: "Use your device's default voice." },
-    { value: 'feminine' as const, label: 'Feminine voice', description: 'A lighter pitch for a softer delivery.' },
     { value: 'masculine' as const, label: 'Masculine voice', description: 'A lower pitch for a steadier delivery.' },
+    { value: 'feminine' as const, label: 'Feminine voice', description: 'A lighter pitch for a softer delivery.' },
   ];
   const speedOptions = [
     { value: 'slow' as const, label: 'Slow' },
