@@ -1,17 +1,20 @@
+<div align="center">
+
 # Hush Companion
 
-<p align="center">
-  <img src="docs/hush-companion-logo.svg" alt="Hush Companion logo" width="800" />
-</p>
+<img src="docs/hush-companion-logo.svg" alt="Hush Companion logo" width="800" />
 
-Hush Companion is a local-first voice companion with four conversation modes:
+**A local-first voice companion for thinking out loud.**
 
-- **Vent** — talk freely and receive supportive reflections.
-- **Debate** — test an idea, prepare for a difficult conversation, or practice an argument.
-- **Listen** — choose a topic and let Hush Companion provide a spoken overview.
-- **Wellness check-in** — reflect, ground yourself, or choose one healthy next step.
+A calm, voice-first space for reflection and everyday ideas. Four conversation modes: Vent, Debate, Listen, and Wellness check-in. The web app uses React and Vite. You can use Google Gemini with a key supplied by each user, or use Ollama locally. Kokoro provides optional local text-to-speech.
 
-The web app uses React and Vite. You can use Google Gemini with a key supplied by each user, or use Ollama locally. Kokoro provides optional local text-to-speech.
+![version](https://img.shields.io/badge/version-v0.1.0-cb3837.svg?style=flat-square)
+![license](https://img.shields.io/badge/license-MIT-007ec6.svg?style=flat-square)
+![tests](https://img.shields.io/badge/tests-passing-4c1.svg?style=flat-square)
+
+[Documentation](#documentation) • [Features](#features) • [Getting started](#quick-start) • [Architecture](#repository-layout)
+
+</div>
 
 > **Project status:** Hush Companion is an experimental prototype, not a production medical, mental-health, or emergency service. AI responses may be inaccurate or unsuitable. See the in-app AI disclaimer before using the project.
 
