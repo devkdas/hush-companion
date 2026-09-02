@@ -470,6 +470,29 @@ export default function App() {
 
       {screen === 'summary' && (
         <section className="page-shell summary">
+          {/* Curved arrow pointing to "Support the developer" nav link */}
+          <div className="support-arrow-hint" aria-hidden="true">
+            <span className="support-arrow-label">If this helped,<br />consider supporting ✨</span>
+            <svg className="support-arrow-svg" viewBox="0 0 90 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M 10 90 C 10 40, 60 20, 78 8"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill="none"
+                strokeDasharray="5 3"
+              />
+              {/* Arrowhead */}
+              <path
+                d="M 72 4 L 80 10 L 68 14"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          </div>
           <div className="eyebrow">CONVERSATION COMPLETE · {duration}</div>
           <h2>{mode === 'listen' ? <>You made room<br /><em>to listen.</em></> : <>You showed up<br /><em>for yourself.</em></>}</h2>
           <p className="summary-intro">Thanks for spending this time with Hush Companion.</p>
