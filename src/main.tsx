@@ -405,7 +405,7 @@ export default function App() {
             <div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" />
             <div className="welcome-orb"><Waves size={43} /></div>
             <div className="floating-note note-one"><Heart size={14} /> I'm listening</div>
-            <div className="floating-note note-two"><Sparkles size={14} /> take your time</div>
+            <div className="floating-note note-two"><Sparkles size={14} /> Take your time</div>
           </div>
           <div className="feature-row">
             <Feature icon={<Mic size={18} />} tone="peach" title="Speak freely" text="Let it out without planning every word." />
