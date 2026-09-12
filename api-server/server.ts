@@ -4,6 +4,7 @@ import rateLimit from '@fastify/rate-limit';
 
 const app = Fastify({ logger: true, bodyLimit: 64 * 1024 });
 const port = Number(process.env.PORT ?? 3000);
+const host = process.env.BIND_HOST ?? '127.0.0.1';
 const ollamaUrl = process.env.OLLAMA_URL ?? 'http://127.0.0.1:11434';
 const kokoroUrl = process.env.KOKORO_URL ?? 'http://127.0.0.1:8000';
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173').split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -14,6 +15,9 @@ await app.register(rateLimit, { max: 30, timeWindow: '1 minute' });
 app.get('/health', async () => ({ ok: true }));
 
 app.post<{ Body: { model?: string; stream?: boolean; messages?: unknown[]; options?: unknown } }>('/api/chat', async (request, reply) => {
+  const { model, messages } = request.body ?? {};
+  if (!Array.isArray(messages) || messages.length === 0) return reply.code(400).send({ error: 'messages must be a non-empty array.' });
+  if (model !== undefined && (typeof model !== 'string' || !model.trim())) return reply.code(400).send({ error: 'model must be a non-empty string.' });
   const response = await fetch(`${ollamaUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...request.body, stream: true }) });
   reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'application/x-ndjson');
   return reply.send(response.body);
@@ -26,4 +30,4 @@ app.post<{ Body: { text: string; voice?: 'system' | 'male' | 'female' } }>('/api
   return reply.send(response.body);
 });
 
-await app.listen({ port, host: '127.0.0.1' });
+await app.listen({ port, host });

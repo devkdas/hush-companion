@@ -7,9 +7,9 @@
     "start": "tsx server.ts"
   },
   "dependencies": {
-    "@fastify/cors": "latest",
-    "@fastify/rate-limit": "latest",
-    "fastify": "latest",
-    "tsx": "latest"
+    "@fastify/cors": "11.3.0",
+    "@fastify/rate-limit": "11.2.0",
+    "fastify": "5.12.1",
+    "tsx": "4.23.13"
   }
 }

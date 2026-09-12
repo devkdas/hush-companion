@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 
+import numpy as np
 import soundfile as sf
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +10,12 @@ from pydantic import BaseModel, Field
 
 
 app = FastAPI(title="Hush Companion local Kokoro TTS")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173"], allow_methods=["POST"], allow_headers=["*"])
+
+# CORS: read allowed origins from env (comma-separated), default to localhost dev server.
+# When accessed via the api-server proxy, rate limiting is handled there (30 req/min).
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
+_allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=_allowed_origins, allow_methods=["POST", "GET"], allow_headers=["*"])
 
 LANG_CODE = os.getenv("HUSH_KOKORO_LANG", "a")
 VOICE_MAP = {"system": os.getenv("HUSH_KOKORO_SYSTEM_VOICE", "af_heart"), "female": os.getenv("HUSH_KOKORO_FEMALE_VOICE", "af_heart"), "male": os.getenv("HUSH_KOKORO_MALE_VOICE", "am_adam")}
@@ -38,7 +44,6 @@ def tts(request: TTSRequest):
         audio_chunks = [audio for _, _, audio in generator]
         if not audio_chunks:
             raise HTTPException(status_code=500, detail="Kokoro returned no audio")
-        import numpy as np
         samples = np.concatenate(audio_chunks)
         output = BytesIO()
         sf.write(output, samples, 24000, format="WAV")

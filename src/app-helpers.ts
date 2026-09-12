@@ -11,9 +11,14 @@ export function publicPath(pathname: string, basePath: string): string {
   return `${basePath}${pathname === '/' ? '' : pathname}`;
 }
 
+const MODES = new Set(['vent', 'debate', 'listen', 'wellness']);
+
 export function modeFromPath(pathname: string): AppMode | null {
-  const value = pathname.replace(/^\/+/, '').split('/')[0] as AppMode;
-  return value === 'vent' || value === 'debate' || value === 'listen' || value === 'wellness' ? value : null;
+  const segments = pathname.replace(/^\/+/, '').split('/').filter(Boolean);
+  for (const segment of segments) {
+    if (MODES.has(segment)) return segment as AppMode;
+  }
+  return null;
 }
 
 export function contextPath(mode: AppMode, context: string): string {
