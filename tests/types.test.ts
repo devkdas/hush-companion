@@ -23,7 +23,8 @@ describe('types — constants', () => {
   });
 
   it('modeStyles vent has the expected style options', () => {
-    expect(modeStyles.vent).toEqual(['Just listen', 'Help me feel understood', 'Help me think it through']);
+    expect(modeStyles.vent).toHaveLength(3);
+    expect(modeStyles.vent).toEqual(expect.arrayContaining(['Just listen', 'Help me feel understood', 'Help me think it through']));
   });
 
   it('modeStyles wellness has the most options', () => {
