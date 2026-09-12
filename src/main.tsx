@@ -130,6 +130,8 @@ export default function App() {
   const recognitionStartingRef = useRef(false);
   const restartTimerRef = useRef<number | null>(null);
   const callStateRef = useRef<CallPhase>('idle');
+  // #4 — settingsRef: always holds latest settings so async callbacks never close over stale values
+  const settingsRef = useRef<ConversationSettings>(null as unknown as ConversationSettings);
 
   // state
   const [callState, setCallState] = useState<CallPhase>('idle');
@@ -146,7 +148,6 @@ export default function App() {
   const [emotion, setEmotion] = useState('Sad');
   const [style, setStyle] = useState('Just listen');
   const [topic, setTopic] = useState('');
-  const [debatePrompt, setDebatePrompt] = useState('');
   const [voice, setVoice] = useState<VoiceProfile>('system');
   const [speed, setSpeed] = useState<'slow' | 'natural' | 'fast'>('natural');
   const [dark, setDark] = useState(() => localStorage.getItem('hush-theme') === 'dark');
@@ -173,13 +174,15 @@ export default function App() {
   const updateMessages = (next: ChatMessage[]) => { messagesRef.current = next; setMessages(next); };
   const settings: ConversationSettings = {
     mode, emotion, responseStyle: style,
-    topic: mode === 'debate' ? debatePrompt : topic,
+    topic,
     voice: { profile: voice, speed, tone: 'warm' },
     listenStyle: 'calm',
   };
+  // #4 — keep ref in sync with latest settings every render
+  settingsRef.current = settings;
 
   const navigate = (nextScreen: Screen, nextMode = mode) => {
-    const context = nextMode === 'vent' ? emotion : nextMode === 'debate' ? debatePrompt : topic;
+    const context = nextMode === 'vent' ? emotion : topic;
     const path = pathFor(nextScreen, nextMode, context || undefined);
     const browserPath = makePublicPath(path, basePath);
     if (window.location.pathname !== browserPath) window.history.pushState({ screen: nextScreen, mode: nextMode }, '', browserPath);
@@ -204,13 +207,13 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // voice gate
+  // voice gate — #6: no longer depends on `speaking`; reads callStateRef to avoid rebuilding on every speaking flip
   useEffect(() => {
     voiceGateRef.current = createVoiceGate(() => {
-      if (speaking) { stopSpeaking(); setSpeaking(false); setCallPhase('listening'); }
+      if (callStateRef.current === 'speaking') { stopSpeaking(); setSpeaking(false); setCallPhase('listening'); }
     });
     return () => voiceGateRef.current?.stop();
-  }, [speaking]);
+  }, []);
 
   const scheduleListening = () => {
     if (!conversationActiveRef.current || muted || restartTimerRef.current) return;
@@ -230,7 +233,8 @@ export default function App() {
       (text) => {
         setListening(false);
         setCallPhase('thinking');
-        void send(text, settings, messagesRef.current, updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
+        // #4 — use settingsRef.current so we always send with the latest settings, not stale closure
+        void send(text, settingsRef.current, messagesRef.current, updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
           () => { if (conversationActiveRef.current) scheduleListening(); },
           () => setCallPhase('speaking'),
         );
@@ -271,7 +275,7 @@ export default function App() {
     ttsQueueRef.current = Promise.resolve();
     setMode(value);
     setStyle(modeStyles[value][0]);
-    if (value !== 'debate') setDebatePrompt('');
+    setTopic('');
     navigate('setup', value);
   };
 
@@ -280,10 +284,11 @@ export default function App() {
     ttsQueueRef.current = Promise.resolve();
     speechRunRef.current += 1;
     conversationActiveRef.current = true;
+    setElapsed(0); // #7 — reset timer so listen sessions always start from 0:00
     navigate('call');
     void send(
       `Begin a short spoken introduction about ${topic || 'the selected topic'}.`,
-      { ...settings, mode: 'listen', topic: topic || 'the selected topic' },
+      { ...settingsRef.current, mode: 'listen', topic: topic || 'the selected topic' },
       [], updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
     );
   };
@@ -299,7 +304,7 @@ export default function App() {
     voiceGateRef.current?.stop();
     recognitionRef.current?.stop();
     navigate('welcome');
-    messagesRef.current = []; setMessages([]); setElapsed(0); setTopic(''); setDebatePrompt('');
+    messagesRef.current = []; setMessages([]); setElapsed(0); setTopic('');
     setListening(false); setSpeaking(false);
     stopSpeaking();
     ttsQueueRef.current = Promise.resolve();
@@ -437,9 +442,9 @@ export default function App() {
       {screen === 'setup' && (
         <Setup
           mode={mode} emotion={emotion} style={style}
-          topic={mode === 'debate' ? debatePrompt : topic}
+          topic={topic}
           onEmotion={updateEmotion} onStyle={setStyle}
-          onTopic={mode === 'debate' ? setDebatePrompt : setTopic}
+          onTopic={setTopic}
           onBack={() => { speechRunRef.current += 1; navigate('mode'); setSpeaking(false); stopSpeaking(); ttsQueueRef.current = Promise.resolve(); }}
           onContinue={() => {
             if (mode === 'listen') {

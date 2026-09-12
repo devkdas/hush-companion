@@ -3,6 +3,32 @@ import { useState } from 'react';
 import type { Mode } from '../types';
 import { debatePrompts, emotions, modeStyles } from '../types';
 
+const styleDescriptions: Record<Mode, Record<string, string>> = {
+  vent: {
+    'Just listen': 'A safe space to vent, with no advice given.',
+    'Help me think it through': 'Collaborative problem-solving and gentle nudges.',
+    'Help me feel understood': "Empathy and validation for what you're going through.",
+  },
+  debate: {
+    Gentle: 'A soft sounding board that asks easy, supportive questions.',
+    Balanced: 'A fair mix of support and constructive pushback.',
+    Challenging: 'Tough questions to rigorously stress-test your perspective.',
+  },
+  listen: {
+    'Calm explanation': 'A soothing, straightforward breakdown of the facts.',
+    Storytelling: 'An engaging, narrative-driven journey through the topic.',
+    'News-style overview': 'Key highlights delivered in a structured, concise briefing.',
+    'Two sides': 'A balanced look at opposing perspectives on the issue.',
+  },
+  wellness: {
+    'Mood check-in': 'A quick pulse-check on your current emotional state.',
+    'Grounding exercise': 'Guided steps to help you center yourself in the present.',
+    'Workday reset': 'A brief mental break to transition between tasks.',
+    'Reflect and journal': 'Open-ended prompts to help you process your thoughts.',
+    'Prepare for a conversation': 'Mental rehearsal and tips for an upcoming talk.',
+  },
+};
+
 interface SetupProps {
   mode: Mode;
   emotion: string;
@@ -44,31 +70,6 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
                           'Choose the idea, decision, or conversation you want to test.';
 
   const isTopicMode = mode === 'listen' || mode === 'debate';
-  const styleDescriptions: Record<Mode, Record<string, string>> = {
-    vent: {
-      'Just listen': 'A safe space to vent, with no advice given.',
-      'Help me think it through': 'Collaborative problem-solving and gentle nudges.',
-      'Help me feel understood': "Empathy and validation for what you're going through.",
-    },
-    debate: {
-      Gentle: 'A soft sounding board that asks easy, supportive questions.',
-      Balanced: 'A fair mix of support and constructive pushback.',
-      Challenging: 'Tough questions to rigorously stress-test your perspective.',
-    },
-    listen: {
-      'Calm explanation': 'A soothing, straightforward breakdown of the facts.',
-      Storytelling: 'An engaging, narrative-driven journey through the topic.',
-      'News-style overview': 'Key highlights delivered in a structured, concise briefing.',
-      'Two sides': 'A balanced look at opposing perspectives on the issue.',
-    },
-    wellness: {
-      'Mood check-in': 'A quick pulse-check on your current emotional state.',
-      'Grounding exercise': 'Guided steps to help you center yourself in the present.',
-      'Workday reset': 'A brief mental break to transition between tasks.',
-      'Reflect and journal': 'Open-ended prompts to help you process your thoughts.',
-      'Prepare for a conversation': 'Mental rehearsal and tips for an upcoming talk.',
-    },
-  };
 
   return (
     <section className={`page-shell narrow setup-screen setup-${mode}`}>
