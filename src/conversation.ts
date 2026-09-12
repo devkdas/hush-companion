@@ -8,7 +8,7 @@ export interface VoicePreferences {
   speed: SpeechSpeed;
   tone: VoiceTone;
 }
-export type Emotion = 'sad' | 'angry' | 'anxious' | 'lonely' | 'frustrated' | 'overwhelmed' | 'calm' | 'excited' | 'other';
+
 
 export interface ConversationSettings {
   mode: Mode;

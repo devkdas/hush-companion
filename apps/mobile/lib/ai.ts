@@ -35,36 +35,48 @@ async function* streamGemini(settings: MobileSettings, messages: MobileMessage[]
     yield fallback(settings, messages[messages.length - 1]?.content ?? '');
     return;
   }
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.geminiModel || 'gemini-2.5-flash')}:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systemPrompt(settings) }] },
-      contents: messages.map((message) => ({ role: message.role === 'assistant' ? 'model' : 'user', parts: [{ text: message.content }] })),
-      generationConfig: { temperature: 0.7 },
-    }),
-  });
-  if (!response.ok || !response.body) throw new Error(`Gemini request failed (${response.status})`);
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() ?? '';
-    for (const line of lines) {
-      const text = line.replace(/^data:\s*/, '').trim();
-      if (!text || text === '[DONE]') continue;
-      try {
-        const data = JSON.parse(text) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-        const chunk = data.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
-        if (chunk) yield chunk;
-      } catch {
-        // Ignore incomplete SSE frames; the next frame completes them.
-      }
+  try {
+    // #2 — key in header, not URL query param (URL would leak key in logs/history)
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(settings.geminiModel || 'gemini-2.5-flash')}:streamGenerateContent?alt=sse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt(settings) }] },
+        contents: messages.map((message) => ({ role: message.role === 'assistant' ? 'model' : 'user', parts: [{ text: message.content }] })),
+        generationConfig: { temperature: 0.7 },
+      }),
+    });
+    // #8 — yield readable error instead of throwing, so callers get useful feedback
+    if (!response.ok) {
+      let detail = '';
+      try { const err = await response.json() as { error?: { message?: string } }; detail = err.error?.message ?? ''; } catch { /* ignore */ }
+      yield `Gemini could not respond (${response.status})${detail ? `: ${detail}` : ''}. Check your API key and try again.`;
+      return;
     }
-    if (done) break;
+    if (!response.body) { yield 'Gemini returned an empty response.'; return; }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        const text = line.replace(/^data:\s*/, '').trim();
+        if (!text || text === '[DONE]') continue;
+        try {
+          const data = JSON.parse(text) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+          const chunk = data.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('') ?? '';
+          if (chunk) yield chunk;
+        } catch {
+          // Ignore incomplete SSE frames; the next frame completes them.
+        }
+      }
+      if (done) break;
+    }
+  } catch (error) {
+    yield `Gemini could not respond. ${error instanceof Error ? error.message : 'Check your network connection.'}`;
   }
 }
 
@@ -85,8 +97,13 @@ async function* streamOllama(settings: MobileSettings, messages: MobileMessage[]
     buffer = lines.pop() ?? '';
     for (const line of lines) {
       if (!line.trim()) continue;
-      const data = JSON.parse(line) as { message?: { content?: string } };
-      if (data.message?.content) yield data.message.content;
+      // #3 — guard JSON.parse; a malformed chunk must not abort the entire stream
+      try {
+        const data = JSON.parse(line) as { message?: { content?: string } };
+        if (data.message?.content) yield data.message.content;
+      } catch {
+        // skip malformed line
+      }
     }
     if (done) break;
   }

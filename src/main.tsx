@@ -130,8 +130,11 @@ export default function App() {
   const recognitionStartingRef = useRef(false);
   const restartTimerRef = useRef<number | null>(null);
   const callStateRef = useRef<CallPhase>('idle');
-  // #4 — settingsRef: always holds latest settings so async callbacks never close over stale values
+  // settingsRef + companion refs: always hold latest values so async callbacks never close over stale state
   const settingsRef = useRef<ConversationSettings>(null as unknown as ConversationSettings);
+  const voiceRef = useRef<VoiceProfile>('system');
+  const speedRef = useRef<'slow' | 'natural' | 'fast'>('natural');
+  const aiConfigRef = useRef<AIConfig>(null as unknown as AIConfig);
 
   // state
   const [callState, setCallState] = useState<CallPhase>('idle');
@@ -178,8 +181,11 @@ export default function App() {
     voice: { profile: voice, speed, tone: 'warm' },
     listenStyle: 'calm',
   };
-  // #4 — keep ref in sync with latest settings every render
+  // keep all live refs in sync every render
   settingsRef.current = settings;
+  voiceRef.current = voice;
+  speedRef.current = speed;
+  aiConfigRef.current = aiConfig;
 
   const navigate = (nextScreen: Screen, nextMode = mode) => {
     const context = nextMode === 'vent' ? emotion : topic;
@@ -234,7 +240,7 @@ export default function App() {
         setListening(false);
         setCallPhase('thinking');
         // #4 — use settingsRef.current so we always send with the latest settings, not stale closure
-        void send(text, settingsRef.current, messagesRef.current, updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
+        void send(text, settingsRef.current, messagesRef.current, updateMessages, voiceRef.current, speedRef.current, aiConfigRef.current, speechRunRef, ttsQueueRef,
           () => { if (conversationActiveRef.current) scheduleListening(); },
           () => setCallPhase('speaking'),
         );

@@ -12,9 +12,12 @@ interface AISettingsProps {
 export function AISettings({ config, onSave, onClose }: AISettingsProps) {
   const [draft, setDraft] = useState<AIConfig>(config);
   const clearKey = () => {
-    const cleared = clearGeminiApiKey();
-    setDraft(cleared);
-    onSave(cleared);
+    // clear from localStorage but keep the rest of the draft (including current provider choice)
+    clearGeminiApiKey();
+    const updated = { ...draft };
+    delete updated.geminiApiKey;
+    setDraft(updated);
+    onSave(updated);
   };
   const geminiConfigured = hasGeminiApiKey(draft);
   const geminiKeyIssue = geminiApiKeyIssue(draft.geminiApiKey);
@@ -97,17 +100,18 @@ interface VoiceSettingsProps {
   onClose: () => void;
 }
 
+const voiceOptions: { value: 'masculine' | 'feminine' | 'system'; label: string; description: string }[] = [
+  { value: 'system', label: 'System voice', description: "Use your device's default voice." },
+  { value: 'masculine', label: 'Masculine voice', description: 'A lower pitch for a steadier delivery.' },
+  { value: 'feminine', label: 'Feminine voice', description: 'A lighter pitch for a softer delivery.' },
+];
+const speedOptions: { value: 'slow' | 'natural' | 'fast'; label: string }[] = [
+  { value: 'slow', label: 'Slow' },
+  { value: 'natural', label: 'Natural' },
+  { value: 'fast', label: 'Fast' },
+];
+
 export function VoiceSettings({ voice, speed, onVoice, onSpeed, onClose }: VoiceSettingsProps) {
-  const voiceOptions = [
-    { value: 'system' as const, label: 'System voice', description: "Use your device's default voice." },
-    { value: 'masculine' as const, label: 'Masculine voice', description: 'A lower pitch for a steadier delivery.' },
-    { value: 'feminine' as const, label: 'Feminine voice', description: 'A lighter pitch for a softer delivery.' },
-  ];
-  const speedOptions = [
-    { value: 'slow' as const, label: 'Slow' },
-    { value: 'natural' as const, label: 'Natural' },
-    { value: 'fast' as const, label: 'Fast' },
-  ];
 
   return (
     <div className="legal-overlay" role="presentation" onClick={onClose}>

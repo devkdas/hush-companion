@@ -45,12 +45,12 @@ export function Call({ mode, duration, muted, listening, speaking, callState, me
         )}
       </div>
       <div className="call-controls">
-        <button className={muted ? 'call-control active' : 'call-control'} onClick={onMute}>
+        <button type="button" className={muted ? 'call-control active' : 'call-control'} onClick={onMute}>
           {muted ? <MicOff size={20} /> : <Mic size={20} />}
           <span>{muted ? 'Unmute' : 'Mute'}</span>
         </button>
-        <button className="end-call" onClick={onEnd}>■</button>
-        <button className="call-control" onClick={onSpeak}>
+        <button type="button" className="end-call" onClick={onEnd}>■</button>
+        <button type="button" className="call-control" onClick={onSpeak}>
           <Repeat2 size={20} />
           <span>{speaking ? 'Stop' : 'Repeat'}</span>
         </button>

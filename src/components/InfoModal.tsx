@@ -1,4 +1,5 @@
 import { ArrowRight, X } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { InfoPanel } from '../types';
 
 interface InfoModalProps {
@@ -39,7 +40,7 @@ const content = {
       { label: 'Contact developer on GitHub', href: 'https://github.com/devkdas' },
     ],
   },
-} satisfies Record<InfoPanel, { eyebrow: string; title: React.ReactNode; body: string; items: unknown[] }>;
+} satisfies Record<InfoPanel, { eyebrow: string; title: ReactNode; body: string; items: unknown[] }>;
 
 export function InfoModal({ panel, onClose, onContact }: InfoModalProps) {
   const c = content[panel];
