@@ -3,13 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // GitHub Pages serves this file for client-side routes.
-      // Strip the /hush-companion/ base prefix, then redirect to /?path=...
-      const base = '/hush-companion';
-      const requested = window.location.pathname.startsWith(base)
+      // GitHub Pages serves this file for all unmatched client-side routes.
+      // Derive the base from the first path segment (the repo name) dynamically
+      // so this file works without changes if the repository is renamed.
+      const segments = window.location.pathname.split('/').filter(Boolean);
+      const base = segments.length > 1 ? '/' + segments[0] : '';
+      const requested = window.location.pathname.startsWith(base + '/')
         ? window.location.pathname.slice(base.length) || '/'
         : window.location.pathname;
-      window.location.replace(`${base}/?path=${encodeURIComponent(requested + window.location.search + window.location.hash)}`);
+      window.location.replace(base + '/?path=' + encodeURIComponent(requested + window.location.search + window.location.hash));
     </script>
   </head>
   <body></body>

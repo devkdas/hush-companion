@@ -73,7 +73,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
 
   return (
     <section className={`page-shell narrow setup-screen setup-${mode}`}>
-      <button className="back-button" onClick={onBack}><ArrowLeft size={15} /> Change mode</button>
+      <button type="button" className="back-button" onClick={onBack}><ArrowLeft size={15} /> Change mode</button>
       <div className="section-heading setup-heading">
         <div className="eyebrow">{mode === 'wellness' ? 'STEP 1 OF 3 · CHECK-IN' : `STEP 2 OF 3 · ${mode.toUpperCase()}`}</div>
         <h2>{heading}</h2>
@@ -127,7 +127,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
       </div>
       <div className="choice-list">
         {modeStyles[mode].map((item) => (
-          <button key={item} className={style === item ? 'choice selected' : 'choice'} onClick={() => onStyle(item)}>
+          <button type="button" key={item} className={style === item ? 'choice selected' : 'choice'} onClick={() => onStyle(item)}>
             <span className="choice-radio">{style === item && <span />}</span>
             <span>
               <strong>{item}</strong>
@@ -139,7 +139,7 @@ export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic
         ))}
       </div>
       <div className="setup-actions">
-        <button className="primary-button next-button" onClick={handleContinue}>
+        <button type="button" className="primary-button next-button" onClick={handleContinue}>
           Continue <ArrowRight size={17} />
         </button>
       </div>

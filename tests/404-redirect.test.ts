@@ -5,23 +5,21 @@ import { describe, expect, it } from 'vitest';
  * We extract the redirect function inline to test it without a browser.
  */
 
-const BASE = '/hush-companion';
-
-// NOTE: window.location.hash is always '' when the browser hits a 404 page
-// (the hash is never sent to the server and is not available in 404.html).
-// The hash parameter in buildRedirectUrl exists only to test the JS function
-// in isolation — hash preservation cannot actually be achieved via this redirect.
+// Mirror the dynamic logic in public/404.html exactly:
 function buildRedirectUrl(pathname: string, search = ''): string {
-  // Mirror the logic in public/404.html exactly:
-  const requested = pathname.startsWith(BASE)
-    ? pathname.slice(BASE.length) || '/'
+  const segments = pathname.split('/').filter(Boolean);
+  // segments.length > 1 means there is at least one path component after the base
+  const base = segments.length > 1 ? '/' + segments[0] : '';
+  const requested = pathname.startsWith(base + '/')
+    ? pathname.slice(base.length) || '/'
     : pathname;
-  return `${BASE}/?path=${encodeURIComponent(requested + search)}`;
+  return base + '/?path=' + encodeURIComponent(requested + search);
 }
 
-describe('404 redirect (GitHub Pages, base:/hush-companion/)', () => {
-  it('redirects root path', () => {
-    expect(buildRedirectUrl('/hush-companion/')).toBe('/hush-companion/?path=%2F');
+describe('404 redirect (GitHub Pages, base derived from first path segment)', () => {
+  it('redirects root-with-trailing-slash path', () => {
+    // '/hush-companion/' has only one non-empty segment — base is '', redirect via root
+    expect(buildRedirectUrl('/hush-companion/')).toBe('/?path=%2Fhush-companion%2F');
   });
 
   it('redirects a deep client-side route', () => {
@@ -39,14 +37,18 @@ describe('404 redirect (GitHub Pages, base:/hush-companion/)', () => {
   // Hash fragments are stripped by the browser before a 404 request is made,
   // so hash preservation is not possible via 404.html redirect in practice.
 
-  it('strips the /hush-companion base prefix from the stored path', () => {
+  it('strips the base prefix from the stored path', () => {
     const url = buildRedirectUrl('/hush-companion/wellness/grounding');
     expect(url).toBe('/hush-companion/?path=%2Fwellness%2Fgrounding');
   });
 
-  it('falls back gracefully if base prefix is missing', () => {
-    // pathname doesn't start with /hush-companion — pass through as-is
+  it('falls back to no-base when there is only one path segment', () => {
+    // pathname has no sub-path (segments.length === 1) → base is '' → redirect to /?path=...
     const url = buildRedirectUrl('/wellness');
-    expect(url).toBe('/hush-companion/?path=%2Fwellness');
+    expect(url).toBe('/?path=%2Fwellness');
+  });
+
+  it('works with a different repo base name', () => {
+    expect(buildRedirectUrl('/my-app/vent/sad')).toBe('/my-app/?path=%2Fvent%2Fsad');
   });
 });

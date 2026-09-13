@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import type { LegalDocument } from '../types';
 
@@ -47,10 +48,24 @@ const legalContent = {
 
 export function LegalModal({ document, onClose }: LegalModalProps) {
   const content = legalContent[document];
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const previousFocus = useRef<Element | null>(null);
+
+  useEffect(() => {
+    previousFocus.current = window.document.activeElement;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.document.addEventListener('keydown', onKey);
+    return () => {
+      window.document.removeEventListener('keydown', onKey);
+      if (previousFocus.current instanceof HTMLElement) previousFocus.current.focus();
+    };
+  }, [onClose]);
+
   return (
     <div className="legal-overlay" role="presentation" onClick={onClose}>
       <section className="legal-modal" role="dialog" aria-modal="true" aria-labelledby="legal-title" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="legal-close" aria-label="Close" onClick={onClose}><X size={18} /></button>
+        <button ref={closeRef} type="button" className="legal-close" aria-label="Close" onClick={onClose}><X size={18} /></button>
         <div className="eyebrow">HUSH COMPANION · INFORMATION</div>
         <h2 id="legal-title">{content.title}</h2>
         <div className="legal-sections">
