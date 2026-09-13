@@ -382,7 +382,10 @@ export default function App() {
     const link = document.createElement('a');
     link.href = url;
     link.download = `hush-conversation-${new Date().toISOString().slice(0, 10)}.txt`;
+    // Must be in the DOM for Firefox to trigger the download on .click()
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
@@ -390,7 +393,7 @@ export default function App() {
   return (
     <main className={`${dark ? 'app dark' : 'app'} ${screen !== 'welcome' ? `${mode}-theme` : ''} ${screen === 'setup' && mode === 'vent' ? `emotion-${emotion.toLowerCase()}` : ''}`}>
       <header className="topbar">
-        <button className="brand" onClick={() => confirmLeave(reset)}>
+        <button type="button" className="brand" onClick={() => confirmLeave(reset)}>
           <span className="brand-mark"><Waves size={17} /></span>
           <span>hush companion<span className="brand-dot">.</span></span>
         </button>
@@ -402,7 +405,7 @@ export default function App() {
           <a className="site-link support-link" href="https://github.com/sponsors/devkdas" target="_blank" rel="noreferrer">Support the developer</a>
           <button className="voice-settings-button" type="button" onClick={() => setShowVoiceSettings(true)}>Voice</button>
           <button className="ai-settings-button" type="button" onClick={() => setShowAISettings(true)}>AI settings</button>
-          <button className="icon-button" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => setDark((v) => { const next = !v; localStorage.setItem('hush-theme', next ? 'dark' : 'light'); return next; })}>
+          <button type="button" className="icon-button" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => setDark((v) => { const next = !v; localStorage.setItem('hush-theme', next ? 'dark' : 'light'); return next; })}>
             {dark ? <Sun size={17} /> : <Moon size={17} />}
           </button>
         </div>
@@ -414,7 +417,7 @@ export default function App() {
             <div className="eyebrow">A LITTLE ROOM TO BREATHE</div>
             <h1>A voice that<br /><em>stays.</em></h1>
             <p className="hero-text">Talk it out. Think it through.<br />No judgment, no typing required.</p>
-            <button className="primary-button large" onClick={() => navigate('mode')}>
+            <button type="button" className="primary-button large" onClick={() => navigate('mode')}>
               Start a conversation <ArrowRight size={18} />
             </button>
             <p className="microcopy"><ShieldCheck size={13} /> Your conversations stay private</p>
@@ -436,7 +439,7 @@ export default function App() {
       {screen === 'mode' && (
         <section className="page-shell narrow">
           <div className="section-heading">
-            <button className="back-button" onClick={() => confirmLeave(() => navigate('welcome'))}>
+            <button type="button" className="back-button" onClick={() => confirmLeave(() => navigate('welcome'))}>
               <ArrowLeft size={15} /> Back
             </button>
             <div className="eyebrow">STEP 1 OF 3</div>
@@ -515,10 +518,10 @@ export default function App() {
           <h2>{mode === 'listen' ? <>You made room<br /><em>to listen.</em></> : <>You showed up<br /><em>for yourself.</em></>}</h2>
           <p className="summary-intro">Thanks for spending this time with Hush Companion.</p>
           <div className="summary-actions">
-            <button className="secondary-button" onClick={downloadTranscript} disabled={!messagesRef.current.length}>
+            <button type="button" className="secondary-button" onClick={downloadTranscript} disabled={!messagesRef.current.length}>
               <FileText size={15} /> Download transcript
             </button>
-            <button className="primary-button" onClick={() => confirmLeave(talkAgain)}>Talk again</button>
+            <button type="button" className="primary-button" onClick={() => confirmLeave(talkAgain)}>Talk again</button>
           </div>
         </section>
       )}
