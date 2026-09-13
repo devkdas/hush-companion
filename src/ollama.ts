@@ -99,7 +99,7 @@ export async function* streamOllama(
     const model = config.ollamaModel ?? 'gemma3:4b';
     const prompt = systemPrompt(settings);
     if (import.meta.env.DEV) console.debug('[Hush Companion] Injected Ollama system prompt:', prompt);
-    const apiBase = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+    const apiBase = baseUrl.replace(/\/+$/, '').endsWith('/api') ? baseUrl.replace(/\/+$/, '') : `${baseUrl.replace(/\/+$/, '')}/api`;
     const response = await fetch(`${apiBase}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -9,7 +9,6 @@ export interface VoicePreferences {
   tone: VoiceTone;
 }
 
-
 export interface ConversationSettings {
   mode: Mode;
   emotion: string;

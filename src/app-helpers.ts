@@ -31,7 +31,6 @@ export function pathFor(screen: AppScreen, mode: AppMode, context?: string): str
   return context ? contextPath(mode, context) : `/${mode}`;
 }
 
-
 export function transcriptText(messages: ChatMessage[]): string {
   return `Hush Companion conversation\n\n${messages.map((message) => `${message.role === 'user' ? 'You' : 'Hush Companion'}: ${message.content}`).join('\n\n')}`;
 }

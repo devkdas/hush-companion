@@ -16,7 +16,7 @@ describe('voice playback', () => {
       lang = '';
       onresult: ((event: { results: ArrayLike<{ 0: { transcript: string } }> }) => void) | null = null;
       onend: (() => void) | null = null;
-      onerror: (() => void) | null = null;
+      onerror: ((event: { error?: string }) => void) | null = null;
       start = vi.fn();
       stop = vi.fn();
     }
@@ -35,6 +35,40 @@ describe('voice playback', () => {
   it('returns null when SpeechRecognition is not supported', () => {
     vi.stubGlobal('window', {});
     expect(createRecognition(() => {}, () => {})).toBeNull();
+  });
+
+  it('calls onError with permanent=true for not-allowed errors', () => {
+    class FakeRecognition {
+      continuous = false; interimResults = false; lang = '';
+      onresult = null; onend: (() => void) | null = null;
+      onerror: ((event: { error?: string }) => void) | null = null;
+      start = vi.fn(); stop = vi.fn();
+    }
+    vi.stubGlobal('window', { SpeechRecognition: FakeRecognition });
+    vi.stubGlobal('navigator', { language: 'en-US' });
+    const onEnd = vi.fn();
+    const onError = vi.fn();
+    const recognition = createRecognition(() => {}, onEnd, onError);
+    recognition?.onerror?.({ error: 'not-allowed' });
+    expect(onError).toHaveBeenCalledWith(true);
+    expect(onEnd).not.toHaveBeenCalled();
+  });
+
+  it('calls onError with permanent=false for transient errors', () => {
+    class FakeRecognition {
+      continuous = false; interimResults = false; lang = '';
+      onresult = null; onend: (() => void) | null = null;
+      onerror: ((event: { error?: string }) => void) | null = null;
+      start = vi.fn(); stop = vi.fn();
+    }
+    vi.stubGlobal('window', { SpeechRecognition: FakeRecognition });
+    vi.stubGlobal('navigator', { language: 'en-US' });
+    const onEnd = vi.fn();
+    const onError = vi.fn();
+    const recognition = createRecognition(() => {}, onEnd, onError);
+    recognition?.onerror?.({ error: 'network' });
+    expect(onError).toHaveBeenCalledWith(false);
+    expect(onEnd).not.toHaveBeenCalled();
   });
 
   it('selects the requested gendered voice and falls back to an English voice', () => {

@@ -7,7 +7,7 @@ export interface BrowserSpeechRecognition {
   lang: string;
   onresult: ((event: { results: ArrayLike<{ 0: { transcript: string } }> }) => void) | null;
   onend: (() => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: { error?: string }) => void) | null;
   start: () => void;
   stop: () => void;
 }
@@ -20,11 +20,27 @@ export function isSpeechRecognitionSupported(): boolean {
   return typeof window !== 'undefined' && !!(window.SpeechRecognition ?? window.webkitSpeechRecognition);
 }
 
-export function createRecognition(onText: (text: string) => void, onEnd: () => void): BrowserSpeechRecognition | null {
+// Errors that are permanent — retrying immediately makes no sense and causes infinite loops.
+const PERMANENT_RECOGNITION_ERRORS = new Set(['not-allowed', 'service-not-available', 'language-not-supported', 'bad-grammar']);
+
+export function createRecognition(
+  onText: (text: string) => void,
+  onEnd: () => void,
+  onError?: (permanent: boolean) => void,
+): BrowserSpeechRecognition | null {
   const Constructor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
   if (!Constructor) return null;
-  const recognition = new Constructor(); recognition.continuous = false; recognition.interimResults = false; recognition.lang = (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
-  recognition.onresult = (event) => onText(event.results[0][0].transcript); recognition.onend = onEnd; recognition.onerror = onEnd; return recognition;
+  const recognition = new Constructor();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
+  recognition.onresult = (event) => onText(event.results[0][0].transcript);
+  recognition.onend = onEnd;
+  recognition.onerror = (event: { error?: string }) => {
+    const permanent = PERMANENT_RECOGNITION_ERRORS.has(event?.error ?? '');
+    if (onError) { onError(permanent); } else { onEnd(); }
+  };
+  return recognition;
 }
 
 export function preferredVoice(preferences: VoicePreferences, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {

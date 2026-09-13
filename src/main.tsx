@@ -103,7 +103,7 @@ function ModeCard({ mode, title, description, onClick }: { mode: Mode; title: st
     mode === 'listen' ? <Volume2 size={22} /> :
     <Sparkles size={22} />;
   return (
-    <button className={`mode-card ${mode}-card`} onClick={() => onClick(mode)}>
+    <button type="button" className={`mode-card ${mode}-card`} onClick={() => onClick(mode)}>
       <span className="card-icon">{icon}</span>
       <span className="card-label">{mode.toUpperCase()}</span>
       <h3>{title}</h3>
@@ -250,6 +250,13 @@ export default function App() {
         setListening(false);
         if (conversationActiveRef.current && callStateRef.current !== 'thinking') scheduleListening();
       },
+      (permanent) => {
+        // Permanent errors (e.g. mic denied) — stop retrying immediately
+        recognitionStartingRef.current = false;
+        setListening(false);
+        if (permanent) conversationActiveRef.current = false;
+        else if (conversationActiveRef.current && callStateRef.current !== 'thinking') scheduleListening();
+      },
     );
     recognitionRef.current = recognition;
     if (recognition) {
@@ -295,7 +302,7 @@ export default function App() {
     void send(
       `Begin a short spoken introduction about ${topic || 'the selected topic'}.`,
       { ...settingsRef.current, mode: 'listen', topic: topic || 'the selected topic' },
-      [], updateMessages, voice, speed, aiConfig, speechRunRef, ttsQueueRef,
+      [], updateMessages, voiceRef.current, speedRef.current, aiConfigRef.current, speechRunRef, ttsQueueRef,
     );
   };
 
