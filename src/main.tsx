@@ -548,8 +548,10 @@ export default function App() {
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 declare global { interface Window { __hushCompanionRoot?: Root; } }
-const root = document.getElementById('root');
-if (!root) throw new Error('Hush Companion could not find the root element.');
-const reactRoot = window.__hushCompanionRoot ?? createRoot(root);
-window.__hushCompanionRoot = reactRoot;
-reactRoot.render(<StrictMode><App /></StrictMode>);
+// Guard: do not run in vitest/server environments where document.getElementById is absent
+if (typeof document !== 'undefined' && document.getElementById('root')) {
+  const root = document.getElementById('root')!;
+  const reactRoot = window.__hushCompanionRoot ?? createRoot(root);
+  window.__hushCompanionRoot = reactRoot;
+  reactRoot.render(<StrictMode><App /></StrictMode>);
+}
