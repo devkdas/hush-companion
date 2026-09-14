@@ -41,14 +41,19 @@ interface SetupProps {
   onContinue: () => void;
 }
 
+/** Pure validation: returns an error message when a topic is required but absent, otherwise null. */
+export function validateSetupTopic(mode: Mode, topic: string): string | null {
+  if (mode !== 'listen' && mode !== 'debate') return null;
+  if (!topic.trim()) return mode === 'debate' ? 'Please enter a topic to work through.' : 'Please enter a topic to talk about.';
+  return null;
+}
+
 export function Setup({ mode, emotion, style, topic, onEmotion, onStyle, onTopic, onBack, onContinue }: SetupProps) {
   const [error, setError] = useState(false);
 
   const handleContinue = () => {
-    if ((mode === 'listen' || mode === 'debate') && !topic.trim()) {
-      setError(true);
-      return;
-    }
+    const err = validateSetupTopic(mode, topic);
+    if (err) { setError(true); return; }
     setError(false);
     onContinue();
   };
