@@ -17,5 +17,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "tests", "tests/components", "scripts", "api-server"]
+  "include": ["src", "tests", "tests/components", "scripts"],
+  "exclude": ["tests/api-server-http.test.ts", "api-server"]
 }
