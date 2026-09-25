@@ -54,6 +54,7 @@ describe('createVoiceGate', () => {
     });
     vi.stubGlobal('AudioContext', class { constructor() { return ctx; } });
     vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
 
     const gate = createVoiceGate(vi.fn());
     const result = await gate.start();
@@ -70,6 +71,7 @@ describe('createVoiceGate', () => {
     });
     vi.stubGlobal('AudioContext', class { constructor() { return ctx; } });
     vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
 
     const gate = createVoiceGate(vi.fn());
     await gate.start();
