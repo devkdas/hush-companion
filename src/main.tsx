@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { StrictMode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Root } from 'react-dom/client';
 import { createRoot } from 'react-dom/client';
@@ -17,7 +17,7 @@ import {
 import {
   appPath as normalizeAppPath, contextPath, modeFromPath,
   pathFor, publicPath as makePublicPath, transcriptText,
-  type AppMode, type AppScreen,
+  type AppMode,
 } from './app-helpers';
 import { cleanListenText } from './voice-helpers';
 
@@ -155,7 +155,13 @@ export default function App() {
   const [showAISettings, setShowAISettings] = useState(false);
   const [showVoiceSettings, setShowVoiceSettings] = useState(false);
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [emotion, setEmotion] = useState('Sad');
+  const [emotion, setEmotion] = useState(() => {
+    // M2: restore emotion from URL context segment on vent sessions (e.g. /vent/sad)
+    const segments = initialPath.replace(/^\/+/, '').split('/');
+    const ctx = segments[1] ? decodeURIComponent(segments[1]) : '';
+    const capitalised = ctx.charAt(0).toUpperCase() + ctx.slice(1).toLowerCase();
+    return capitalised || 'Sad';
+  });
   const [style, setStyle] = useState('Just listen');
   const [topic, setTopic] = useState('');
   const [voice, setVoice] = useState<VoiceProfile>('system');
@@ -385,12 +391,13 @@ export default function App() {
       window.history.replaceState({ legal: doc }, '', makePublicPath(path, basePath));
   };
 
-  const closeLegal = () => {
+  // Q6: stable ref so LegalModal's useEffect dep doesn't re-fire every render
+  const closeLegal = useCallback(() => {
     setLegalDocument(null);
     const path = normalizeAppPath(window.location.pathname, basePath);
     if (path === '/terms' || path === '/privacy' || path === '/ai-disclaimer')
       window.history.replaceState({}, '', makePublicPath('/', basePath));
-  };
+  }, []);
 
   const downloadTranscript = () => {
     if (!messages.length) return;
@@ -564,11 +571,17 @@ export default function App() {
 }
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
-declare global { interface Window { __hushCompanionRoot?: Root; } }
 // Guard: do not run in vitest/server environments where document.getElementById is absent
 if (typeof document !== 'undefined' && document.getElementById('root')) {
   const root = document.getElementById('root')!;
-  const reactRoot = window.__hushCompanionRoot ?? createRoot(root);
-  window.__hushCompanionRoot = reactRoot;
+  // M3: HMR root cache is dev-only — in production always create a fresh root
+  const reactRoot = import.meta.env.DEV
+    ? ((window as Window & { __hushCompanionRoot?: ReturnType<typeof createRoot> }).__hushCompanionRoot
+        ?? (() => {
+          const r = createRoot(root);
+          (window as Window & { __hushCompanionRoot?: ReturnType<typeof createRoot> }).__hushCompanionRoot = r;
+          return r;
+        })())
+    : createRoot(root);
   reactRoot.render(<StrictMode><App /></StrictMode>);
 }

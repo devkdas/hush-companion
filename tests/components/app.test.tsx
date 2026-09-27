@@ -83,7 +83,7 @@ describe('App', () => {
     const header = document.querySelector('.topbar')!;
     fireEvent.click(within(header as HTMLElement).getByRole('button', { name: /^docs$/i }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText(/hush companion documentation/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/hush companion documentation/i)[0]).toBeInTheDocument();
   });
 
   it('opens AI settings when "AI settings" is clicked', () => {

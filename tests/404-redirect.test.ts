@@ -6,14 +6,14 @@ import { describe, expect, it } from 'vitest';
  */
 
 // Mirror the dynamic logic in public/404.html exactly:
-function buildRedirectUrl(pathname: string, search = ''): string {
+function buildRedirectUrl(pathname: string, search = '', hash = ''): string {
   const segments = pathname.split('/').filter(Boolean);
   // segments.length > 1 means there is at least one path component after the base
   const base = segments.length > 1 ? '/' + segments[0] : '';
   const requested = pathname.startsWith(base + '/')
     ? pathname.slice(base.length) || '/'
     : pathname;
-  return base + '/?path=' + encodeURIComponent(requested + search);
+  return base + '/?path=' + encodeURIComponent(requested + search + hash);
 }
 
 describe('404 redirect (GitHub Pages, base derived from first path segment)', () => {
@@ -50,5 +50,10 @@ describe('404 redirect (GitHub Pages, base derived from first path segment)', ()
 
   it('works with a different repo base name', () => {
     expect(buildRedirectUrl('/my-app/vent/sad')).toBe('/my-app/?path=%2Fvent%2Fsad');
+  });
+
+  it('includes hash fragment in the encoded path', () => {
+    expect(buildRedirectUrl('/hush-companion/vent', '', '#anchor'))
+      .toBe('/hush-companion/?path=%2Fvent%23anchor');
   });
 });

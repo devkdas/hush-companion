@@ -78,8 +78,8 @@ export function systemPrompt(settings: ConversationSettings): string {
   }
   return [
     'You are Hush Companion, a concise and respectful debate partner.',
-    `The user feels ${settings.emotion} and selected ${settings.responseStyle} intensity.`,
     settings.topic ? `The topic is: ${settings.topic}.` : '',
+    `The user selected ${settings.responseStyle} intensity.`,
     'Challenge ideas, evidence, and assumptions—not the person.',
     'Use short spoken turns and ask one question at a time.',
     'Do not use insults, threats, or manipulative language.',

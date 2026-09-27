@@ -1,7 +1,7 @@
 import { ChatMessage } from './conversation';
 
 export type AppMode = 'vent' | 'debate' | 'listen' | 'wellness';
-export type AppScreen = 'welcome' | 'mode' | 'setup' | 'call' | 'summary';
+type PathScreen = 'welcome' | 'mode' | 'setup' | 'call' | 'summary';
 
 export function appPath(pathname: string, basePath: string): string {
   return pathname.startsWith(basePath) ? pathname.slice(basePath.length) || '/' : pathname;
@@ -25,7 +25,7 @@ export function contextPath(mode: AppMode, context: string): string {
   return `/${mode}/${encodeURIComponent(context.trim().toLowerCase())}`;
 }
 
-export function pathFor(screen: AppScreen, mode: AppMode, context?: string): string {
+export function pathFor(screen: PathScreen, mode: AppMode, context?: string): string {
   if (screen === 'welcome') return '/';
   if (screen === 'mode') return '/modes';
   return context ? contextPath(mode, context) : `/${mode}`;

@@ -50,7 +50,7 @@ export async function* streamGemini(
 ): AsyncGenerator<string> {
   try {
     const trimmedKey = apiKey.trim();
-    if (trimmedKey.startsWith('{') || trimmedKey.startsWith('[') || trimmedKey.includes(' ') || trimmedKey.length < 12) throw new Error('The configured Gemini key is not valid. Open AI settings and paste only the complete Google AI Studio key.');
+    if (trimmedKey.startsWith('{') || trimmedKey.startsWith('[') || trimmedKey.includes(' ') || trimmedKey.length < 30) throw new Error('The configured Gemini key is not valid. Open AI settings and paste only the complete Google AI Studio key.');
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
     const response = await fetch(endpoint, {
       method: 'POST',

@@ -7,6 +7,8 @@ const host = process.env.BIND_HOST ?? '127.0.0.1';
 const ollamaUrl = process.env.OLLAMA_URL ?? 'http://127.0.0.1:11434';
 const kokoroUrl = process.env.KOKORO_URL ?? 'http://127.0.0.1:8000';
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173').split(',').map((origin) => origin.trim()).filter(Boolean);
+const CHAT_TIMEOUT_MS = Number(process.env.CHAT_TIMEOUT_MS ?? 30_000);
+const TTS_TIMEOUT_MS = Number(process.env.TTS_TIMEOUT_MS ?? 15_000);
 
 export async function buildApp() {
   const app = Fastify({ logger: false, bodyLimit: 64 * 1024 });
@@ -21,7 +23,10 @@ export async function buildApp() {
     if (!Array.isArray(messages) || messages.length === 0) return reply.code(400).send({ error: 'messages must be a non-empty array.' });
     if (model !== undefined && (typeof model !== 'string' || !model.trim())) return reply.code(400).send({ error: 'model must be a non-empty string.' });
     try {
-      const response = await fetch(`${ollamaUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...request.body, stream: true }) });
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), CHAT_TIMEOUT_MS);
+      const response = await fetch(`${ollamaUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...request.body, stream: true }), signal: ac.signal });
+      clearTimeout(timer);
       reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'application/x-ndjson');
       return reply.send(response.body);
     } catch (err) {
@@ -32,7 +37,10 @@ export async function buildApp() {
   app.post<{ Body: { text: string; voice?: 'system' | 'male' | 'female' } }>('/api/tts', async (request, reply) => {
     if (!request.body?.text || request.body.text.length > 4000) return reply.code(400).send({ error: 'Text must be between 1 and 4000 characters.' });
     try {
-      const response = await fetch(`${kokoroUrl}/tts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request.body) });
+      const ac = new AbortController();
+      const timer = setTimeout(() => ac.abort(), TTS_TIMEOUT_MS);
+      const response = await fetch(`${kokoroUrl}/tts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request.body), signal: ac.signal });
+      clearTimeout(timer);
       reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'audio/wav');
       return reply.send(response.body);
     } catch (err) {

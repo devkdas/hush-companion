@@ -141,4 +141,33 @@ describe('createVoiceGate', () => {
 
     gate.stop();
   });
+
+  it('calls onVoice after 3 consecutive loud frames (rms > 0.035)', async () => {
+    const onVoice = vi.fn();
+    const ctx = makeAudioContextStub();
+    // Override analyser to fill with loud audio: value 255 → normalized (255-128)/128 ≈ 0.992
+    ctx.analyser.getByteTimeDomainData = vi.fn((data: Uint8Array) => data.fill(255));
+    const stream = makeStreamStub();
+    let rafCallback: FrameRequestCallback | null = null;
+    let now = 5000; // start far from lastVoice=0 so the > 1200ms guard passes immediately
+    vi.stubGlobal('navigator', {
+      mediaDevices: { getUserMedia: vi.fn().mockResolvedValue(stream) },
+    });
+    vi.stubGlobal('AudioContext', class { constructor() { return ctx; } });
+    vi.stubGlobal('requestAnimationFrame', vi.fn((cb: FrameRequestCallback) => { rafCallback = cb; return 1; }));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    vi.stubGlobal('performance', { now: vi.fn(() => now) });
+
+    const gate = createVoiceGate(onVoice);
+    await gate.start();
+
+    // Trigger 3 successive frames — each raises speakingFrames; onVoice fires on frame 3
+    (rafCallback as FrameRequestCallback | null)?.(0); // speakingFrames = 1
+    (rafCallback as FrameRequestCallback | null)?.(0); // speakingFrames = 2
+    (rafCallback as FrameRequestCallback | null)?.(0); // speakingFrames = 3 → onVoice()
+
+    expect(onVoice).toHaveBeenCalledOnce();
+
+    gate.stop();
+  });
 });

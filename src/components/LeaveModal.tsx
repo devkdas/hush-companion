@@ -16,8 +16,8 @@ export function LeaveModal({ onCancel, onConfirm }: { onCancel: () => void; onCo
   }, [onCancel]);
 
   return (
-    <div className="legal-overlay" role="presentation">
-      <section className="legal-modal leave-modal" role="dialog" aria-modal="true" aria-labelledby="leave-title">
+    <div className="legal-overlay" role="presentation" onClick={onCancel}>
+      <section className="legal-modal leave-modal" role="dialog" aria-modal="true" aria-labelledby="leave-title" onClick={(e) => e.stopPropagation()}>
         <div className="eyebrow">ACTIVE CONVERSATION</div>
         <h2 id="leave-title">Leave this conversation?</h2>
         <p>You have an existing conversation in progress. Leaving now will clear this conversation.</p>

@@ -12,9 +12,9 @@ describe('AI clients', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     const chunks: string[] = [];
-    for await (const chunk of streamGemini({ mode: 'vent', emotion: 'sad', responseStyle: 'listen' }, [{ role: 'user', content: 'Hi' }], 'test-gemini-key-1234567890')) chunks.push(chunk);
+    for await (const chunk of streamGemini({ mode: 'vent', emotion: 'sad', responseStyle: 'listen' }, [{ role: 'user', content: 'Hi' }], 'test-gemini-key-1234567890-xxxxxx')) chunks.push(chunk);
     expect(chunks.join('')).toBe('Hello there');
-    expect(fetchMock).toHaveBeenCalledWith(expect.not.stringContaining('test-gemini-key-1234567890'), expect.objectContaining({ method: 'POST', headers: expect.objectContaining({ 'x-goog-api-key': 'test-gemini-key-1234567890' }) }));
+    expect(fetchMock).toHaveBeenCalledWith(expect.not.stringContaining('test-gemini-key-1234567890-xxxxxx'), expect.objectContaining({ method: 'POST', headers: expect.objectContaining({ 'x-goog-api-key': 'test-gemini-key-1234567890-xxxxxx' }) }));
     const request = JSON.parse(fetchMock.mock.calls[0][1].body as string) as { contents: Array<{ role: string }>; systemInstruction: { parts: Array<{ text: string }> }; generationConfig: { temperature: number } };
     expect(request.contents).toEqual([{ role: 'user', parts: [{ text: 'Hi' }] }]);
     expect(request.systemInstruction.parts[0].text).toContain('You are Hush Companion');
@@ -53,7 +53,7 @@ describe('AI clients', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     const chunks: string[] = [];
-    for await (const chunk of streamAI({ mode: 'debate', emotion: 'calm', responseStyle: 'balanced' }, [{ role: 'user', content: 'Hi' }], { provider: 'gemini', geminiApiKey: 'test-gemini-key-1234567890', geminiModel: 'gemini-test' })) chunks.push(chunk);
+    for await (const chunk of streamAI({ mode: 'debate', emotion: 'calm', responseStyle: 'balanced' }, [{ role: 'user', content: 'Hi' }], { provider: 'gemini', geminiApiKey: 'test-gemini-key-1234567890-xxxxxx', geminiModel: 'gemini-test' })) chunks.push(chunk);
     expect(chunks.join('')).toBe('Gemini response');
     expect(fetchMock.mock.calls[0][0]).toContain('gemini-test');
     vi.unstubAllGlobals();

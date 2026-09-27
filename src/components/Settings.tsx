@@ -17,7 +17,7 @@ export function AISettings({ config, onSave, onClose }: AISettingsProps) {
     const updated = { ...draft };
     delete updated.geminiApiKey;
     setDraft(updated);
-    onSave(updated);
+    // Don't call onSave — let user review and click Save themselves
   };
   const geminiConfigured = hasGeminiApiKey(draft);
   const geminiKeyIssue = geminiApiKeyIssue(draft.geminiApiKey);

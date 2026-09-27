@@ -1,6 +1,6 @@
 {
   "name": "voice-companion",
-  "private": false,
+  "private": true,
   "version": "0.1.0",
   "description": "A calm, voice-first AI companion for reflection, conversation practice, learning, and everyday wellbeing.",
   "license": "MIT",
@@ -14,10 +14,12 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
+    "typecheck:server": "tsc --noEmit -p api-server/tsconfig.json",
+    "typecheck:mobile": "tsc --noEmit -p apps/mobile/tsconfig.json",
     "test": "vitest run"
   },
   "dependencies": {
-    "lucide-react": "1.37.0",
+    "lucide-react": "^1.37.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

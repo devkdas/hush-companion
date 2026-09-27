@@ -50,13 +50,13 @@ export function InfoModal({ panel, onClose, onContact }: InfoModalProps) {
         <button type="button" className="legal-close" aria-label="Close" onClick={onClose}><X size={18} /></button>
         <div className="eyebrow">{c.eyebrow}</div>
         <h2 id="info-title">{c.title}</h2>
-        {panel !== 'docs' && <p>{c.body}</p>}
+        <p>{c.body}</p>
         <div className="info-links">
           {(c.items as Record<string, string>[]).map((item) =>
             'linkLabel' in item ? (
               <div className="contact-email-row" key={item.label}>
                 <span>{item.label}</span>
-                <a href={item.href}>{item.linkLabel}</a>
+                <a href={item.href} rel="noreferrer">{item.linkLabel}</a>
                 <ArrowRight size={15} />
               </div>
             ) : 'href' in item ? (
