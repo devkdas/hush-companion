@@ -35,6 +35,16 @@ describe('conversation rules', () => {
     expect(prompt).toContain('Challenge ideas');
   });
 
+  it('debate prompt does not leak emotion state (Q2 regression)', () => {
+    // Debate mode never collects emotion — the prompt must not expose it
+    const sadPrompt  = systemPrompt({ mode: 'debate', emotion: 'Sad',   responseStyle: 'Balanced', topic: 'remote work' });
+    const angryPrompt = systemPrompt({ mode: 'debate', emotion: 'Angry', responseStyle: 'Balanced', topic: 'remote work' });
+    expect(sadPrompt).not.toMatch(/feels? sad/i);
+    expect(angryPrompt).not.toMatch(/feels? angry/i);
+    // Both prompts should be identical regardless of emotion
+    expect(sadPrompt).toBe(angryPrompt);
+  });
+
   it('adds private emotion guidance without exposing the implementation label', () => {
     const prompt = systemPrompt({ mode: 'vent', emotion: 'Sad', responseStyle: 'Just listen' });
     expect(prompt).toContain('Be gentle, patient, and validating');

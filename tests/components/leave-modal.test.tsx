@@ -37,4 +37,19 @@ describe('LeaveModal', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onConfirm).not.toHaveBeenCalled();
   });
+
+  it('calls onCancel when the overlay backdrop is clicked (M1 regression)', () => {
+    const onCancel = vi.fn();
+    render(<LeaveModal onCancel={onCancel} onConfirm={vi.fn()} />);
+    // The outer overlay div has role="presentation"
+    fireEvent.click(screen.getByRole('presentation'));
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it('does not call onConfirm when the overlay is clicked', () => {
+    const onConfirm = vi.fn();
+    render(<LeaveModal onCancel={vi.fn()} onConfirm={onConfirm} />);
+    fireEvent.click(screen.getByRole('presentation'));
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
 });

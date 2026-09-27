@@ -57,4 +57,12 @@ describe('InfoModal', () => {
     expect(screen.getByText('Hush Companion documentation')).toBeInTheDocument();
     expect(screen.getByText('Google Gemini documentation')).toBeInTheDocument();
   });
+
+  it('shows docs panel body text (Q10 regression — was silently dropped)', () => {
+    render(<InfoModal panel="docs" onClose={vi.fn()} onContact={vi.fn()} />);
+    // The <p> body "Browse the Hush Companion documentation..." must be visible
+    const bodyEl = screen.getByText(/browse the hush companion documentation/i);
+    expect(bodyEl).toBeInTheDocument();
+    expect(bodyEl.tagName.toLowerCase()).toBe('p');
+  });
 });

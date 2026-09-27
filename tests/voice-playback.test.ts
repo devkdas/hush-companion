@@ -144,4 +144,53 @@ describe('speakLocal', () => {
   it('returns false for blank text regardless of environment', async () => {
     expect(await speakLocal('   ')).toBe(false);
   });
+
+  it('returns false when TTS server responds with 4xx', async () => {
+    vi.stubGlobal('import.meta', { env: { VITE_TTS_URL: 'http://localhost:8000' } });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
+      new Response('error', { status: 422 }),
+    ));
+    expect(await speakLocal('Hello')).toBe(false);
+  });
+
+  it('returns false when fetch throws (e.g. ECONNREFUSED)', async () => {
+    vi.stubGlobal('import.meta', { env: { VITE_TTS_URL: 'http://localhost:8000' } });
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('ECONNREFUSED')));
+    expect(await speakLocal('Hello')).toBe(false);
+  });
+});
+
+// ─── speak() rate + pitch ─────────────────────────────────────────────────────
+describe('speak() rate and pitch', () => {
+  it('applies slow rate (0.85) for slow speed', () => {
+    const synth = makeSynthesis(false);
+    vi.stubGlobal('window', { speechSynthesis: synth });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    speak('Hello', { profile: 'system', speed: 'slow', tone: 'warm' });
+    expect(synth.utterances[0].rate).toBe(0.85);
+  });
+
+  it('applies fast rate (1.15) for fast speed', () => {
+    const synth = makeSynthesis(false);
+    vi.stubGlobal('window', { speechSynthesis: synth });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    speak('Hello', { profile: 'system', speed: 'fast', tone: 'warm' });
+    expect(synth.utterances[0].rate).toBe(1.15);
+  });
+
+  it('applies lower pitch (0.85) for masculine profile', () => {
+    const synth = makeSynthesis(false);
+    vi.stubGlobal('window', { speechSynthesis: synth });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    speak('Hello', { profile: 'masculine', speed: 'natural', tone: 'warm' });
+    expect(synth.utterances[0].pitch).toBe(0.85);
+  });
+
+  it('applies higher pitch (1.08) for feminine profile', () => {
+    const synth = makeSynthesis(false);
+    vi.stubGlobal('window', { speechSynthesis: synth });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    speak('Hello', { profile: 'feminine', speed: 'natural', tone: 'warm' });
+    expect(synth.utterances[0].pitch).toBe(1.08);
+  });
 });

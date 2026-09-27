@@ -170,4 +170,39 @@ describe('createVoiceGate', () => {
 
     gate.stop();
   });
+
+  it('does not call onVoice again within 1200ms of the last trigger (debounce)', async () => {
+    const onVoice = vi.fn();
+    const ctx = makeAudioContextStub();
+    ctx.analyser.getByteTimeDomainData = vi.fn((data: Uint8Array) => data.fill(255));
+    const stream = makeStreamStub();
+    let rafCallback: FrameRequestCallback | null = null;
+    let now = 5000;
+    vi.stubGlobal('navigator', {
+      mediaDevices: { getUserMedia: vi.fn().mockResolvedValue(stream) },
+    });
+    vi.stubGlobal('AudioContext', class { constructor() { return ctx; } });
+    vi.stubGlobal('requestAnimationFrame', vi.fn((cb: FrameRequestCallback) => { rafCallback = cb; return 1; }));
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    vi.stubGlobal('performance', { now: vi.fn(() => now) });
+
+    const gate = createVoiceGate(onVoice);
+    await gate.start();
+
+    // First burst — 3 frames → fires onVoice, sets lastVoice = 5000
+    (rafCallback as FrameRequestCallback | null)?.(0);
+    (rafCallback as FrameRequestCallback | null)?.(0);
+    (rafCallback as FrameRequestCallback | null)?.(0);
+    expect(onVoice).toHaveBeenCalledOnce();
+
+    // Advance time by only 500ms (< 1200ms guard)
+    now = 5500;
+    // Another 3 loud frames — speakingFrames resets between bursts? No.
+    // speakingFrames is already 3 after the first burst and doesn't reset (still loud).
+    // now - lastVoice = 500 < 1200, so onVoice must NOT be called again
+    (rafCallback as FrameRequestCallback | null)?.(0);
+    expect(onVoice).toHaveBeenCalledOnce(); // still only once
+
+    gate.stop();
+  });
 });

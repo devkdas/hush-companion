@@ -104,4 +104,38 @@ describe('AI clients', () => {
     expect(chunks.join('')).toContain('work through it carefully');
     vi.unstubAllGlobals();
   });
+
+  it('rejects Gemini keys shorter than 30 chars before making a request (Q4 regression)', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const chunks: string[] = [];
+    // 29 chars — just under the threshold
+    for await (const chunk of streamGemini(
+      { mode: 'vent', emotion: 'calm', responseStyle: 'Just listen' },
+      [{ role: 'user', content: 'Hi' }],
+      'a'.repeat(29),
+    )) chunks.push(chunk);
+    expect(chunks.join('')).toContain('configured Gemini key is not valid');
+    expect(fetchMock).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
+  it('accepts Gemini keys of exactly 30 chars or more', async () => {
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('data: {"candidates":[{"content":{"parts":[{"text":"ok"}]}}]}\n\n'));
+        controller.close();
+      },
+    });
+    const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    const chunks: string[] = [];
+    for await (const chunk of streamGemini(
+      { mode: 'vent', emotion: 'calm', responseStyle: 'Just listen' },
+      [{ role: 'user', content: 'Hi' }],
+      'a'.repeat(30),
+    )) chunks.push(chunk);
+    expect(fetchMock).toHaveBeenCalledOnce();
+    vi.unstubAllGlobals();
+  });
 });

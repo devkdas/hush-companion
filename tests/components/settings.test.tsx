@@ -98,4 +98,16 @@ describe('AISettings', () => {
     render(<AISettings config={geminiConfig} onSave={vi.fn()} onClose={vi.fn()} />);
     expect(screen.getByRole('button', { name: /clear saved key/i })).toBeDisabled();
   });
+
+  it('clearKey does NOT call onSave or close the modal (Q7 regression)', () => {
+    const onSave  = vi.fn();
+    const onClose = vi.fn();
+    // Provide a config with a key so the Clear button is enabled
+    const configWithKey: AIConfig = { provider: 'gemini', geminiApiKey: 'a'.repeat(35) };
+    render(<AISettings config={configWithKey} onSave={onSave} onClose={onClose} />);
+    fireEvent.click(screen.getByRole('button', { name: /clear saved key/i }));
+    // Modal stays open and onSave is not called — user must click Save manually
+    expect(onSave).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
