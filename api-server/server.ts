@@ -20,16 +20,24 @@ export async function buildApp() {
     const { model, messages } = request.body ?? {};
     if (!Array.isArray(messages) || messages.length === 0) return reply.code(400).send({ error: 'messages must be a non-empty array.' });
     if (model !== undefined && (typeof model !== 'string' || !model.trim())) return reply.code(400).send({ error: 'model must be a non-empty string.' });
-    const response = await fetch(`${ollamaUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...request.body, stream: true }) });
-    reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'application/x-ndjson');
-    return reply.send(response.body);
+    try {
+      const response = await fetch(`${ollamaUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...request.body, stream: true }) });
+      reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'application/x-ndjson');
+      return reply.send(response.body);
+    } catch (err) {
+      return reply.code(502).send({ error: 'Ollama upstream unavailable.', detail: err instanceof Error ? err.message : String(err) });
+    }
   });
 
   app.post<{ Body: { text: string; voice?: 'system' | 'male' | 'female' } }>('/api/tts', async (request, reply) => {
     if (!request.body?.text || request.body.text.length > 4000) return reply.code(400).send({ error: 'Text must be between 1 and 4000 characters.' });
-    const response = await fetch(`${kokoroUrl}/tts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request.body) });
-    reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'audio/wav');
-    return reply.send(response.body);
+    try {
+      const response = await fetch(`${kokoroUrl}/tts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(request.body) });
+      reply.code(response.status).header('content-type', response.headers.get('content-type') ?? 'audio/wav');
+      return reply.send(response.body);
+    } catch (err) {
+      return reply.code(502).send({ error: 'TTS upstream unavailable.', detail: err instanceof Error ? err.message : String(err) });
+    }
   });
 
   return app;

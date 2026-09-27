@@ -8,7 +8,7 @@ describe('voice helpers', () => {
     // no trailing slash
     expect(ttsEndpoint('https://api.example.com')).toBe('https://api.example.com/api/tts');
     // empty string falls back to localhost
-    expect(ttsEndpoint('')).toBe('/api/tts');
+    expect(ttsEndpoint('')).toBe('http://localhost:8000/api/tts');
   });
 
   it('removes parenthetical production directions from Listen text', () => {

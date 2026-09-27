@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useRef, useState } from 'react';
+import { StrictMode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Root } from 'react-dom/client';
 import { createRoot } from 'react-dom/client';
@@ -80,10 +80,13 @@ async function send(
     if (ready) { const part = ready[0]; spoken += part; queueChunk(part); }
   }
   const remainder = answer.slice(spoken.length);
-  if (remainder.trim()) queueChunk(remainder);
-  ttsQueueRef.current = ttsQueueRef.current.then(() => {
-    if (run === speechRunRef.current) onSpeechEnd?.();
-  });
+  if (remainder.trim()) {
+    queueChunk(remainder, true); // B4: final=true ensures onSpeechEnd fires after this chunk plays
+  } else {
+    ttsQueueRef.current = ttsQueueRef.current.then(() => {
+      if (run === speechRunRef.current) onSpeechEnd?.();
+    });
+  }
 }
 
 // ─── Small presentational components ─────────────────────────────────────────
@@ -115,9 +118,10 @@ function ModeCard({ mode, title, description, onClick }: { mode: Mode; title: st
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const redirectedPath = new URLSearchParams(window.location.search).get('path');
-  const initialPath = redirectedPath || normalizeAppPath(window.location.pathname, basePath);
-  if (redirectedPath) window.history.replaceState({}, '', makePublicPath(initialPath, basePath));
+  const initialPath = (() => {
+    const redirected = new URLSearchParams(window.location.search).get('path');
+    return redirected || normalizeAppPath(window.location.pathname, basePath);
+  })();
   const initialMode = modeFromPath(initialPath) ?? 'vent';
   const speechSupported = isSpeechRecognitionSupported();
 
@@ -135,6 +139,9 @@ export default function App() {
   const voiceRef = useRef<VoiceProfile>('system');
   const speedRef = useRef<'slow' | 'natural' | 'fast'>('natural');
   const aiConfigRef = useRef<AIConfig>(null as unknown as AIConfig);
+  // B3/B5: mutable refs for values read inside async callbacks — avoids stale closure bugs
+  const mutedRef = useRef(false);
+  const listeningRef = useRef(false);
 
   // state
   const [callState, setCallState] = useState<CallPhase>('idle');
@@ -186,6 +193,16 @@ export default function App() {
   voiceRef.current = voice;
   speedRef.current = speed;
   aiConfigRef.current = aiConfig;
+  // B3/B5: sync mutable refs used by async callbacks
+  mutedRef.current = muted;
+  listeningRef.current = listening;
+
+  // B2: replaceState runs once on mount, not every re-render
+  useLayoutEffect(() => {
+    const redirected = new URLSearchParams(window.location.search).get('path');
+    if (redirected) window.history.replaceState({}, '', makePublicPath(redirected || normalizeAppPath(window.location.pathname, basePath), basePath));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const navigate = (nextScreen: Screen, nextMode = mode) => {
     const context = nextMode === 'vent' ? emotion : topic;
@@ -222,12 +239,12 @@ export default function App() {
   }, []);
 
   const scheduleListening = () => {
-    if (!conversationActiveRef.current || muted || restartTimerRef.current) return;
+    if (!conversationActiveRef.current || mutedRef.current || restartTimerRef.current) return;
     restartTimerRef.current = window.setTimeout(() => { restartTimerRef.current = null; beginListening(); }, 250);
   };
 
   const beginListening = () => {
-    if (muted || recognitionStartingRef.current || listening || callStateRef.current === 'speaking') return;
+    if (mutedRef.current || recognitionStartingRef.current || listeningRef.current || callStateRef.current === 'speaking') return;
     speechRunRef.current += 1;
     ttsQueueRef.current = Promise.resolve();
     stopSpeaking();

@@ -1,7 +1,7 @@
 export type LocalVoice = 'system' | 'male' | 'female';
 
 export function ttsEndpoint(apiUrl: string | undefined): string {
-  const base = apiUrl ?? 'http://localhost:8000';
+  const base = apiUrl || 'http://localhost:8000';
   return `${base.replace(/\/$/, '')}/api/tts`;
 }
 
