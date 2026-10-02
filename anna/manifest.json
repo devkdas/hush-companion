@@ -1,0 +1,38 @@
+{
+  "schema": 2,
+  "required_executas": [],
+  "tags": ["voice", "wellness", "reflection", "ai", "mental-health"],
+  "system_prompt_addendum": "Hush Companion is a calm, voice-first AI space for thinking out loud. It has four conversation modes: Vent (listen and reflect back without judgment), Debate (steelman both sides of an argument), Listen (explain topics clearly and engagingly), and Wellness check-in (non-clinical grounding, breathing, journaling, and workday reset exercises). Be warm, calm, and concise. Never claim to be a therapist, doctor, or emergency service. Encourage users to seek professional help for serious concerns.",
+  "ui": {
+    "bundle": {
+      "format": "static-spa",
+      "entry": "index.html",
+      "external_origins": [
+        "https://generativelanguage.googleapis.com"
+      ]
+    },
+    "views": [
+      {
+        "name": "main",
+        "title": "Hush Companion",
+        "default": true,
+        "default_size": { "w": 900, "h": 640 },
+        "min_size": { "w": 480, "h": 400 }
+      }
+    ],
+    "host_api": {
+      "storage": ["get", "set", "delete"],
+      "window": ["set_title", "ready"],
+      "llm": ["complete"]
+    },
+    "csp_overrides": {
+      "connect-src": ["https://generativelanguage.googleapis.com"]
+    },
+    "state_merge": "last_writer_wins"
+  },
+  "dev": {
+    "fixtures": [],
+    "seed_storage": {},
+    "user_id": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "slug": "hush-companion",
+  "name": "Hush Companion",
+  "tagline": "A calm, voice-first space for thinking out loud",
+  "description": "Talk it out, think it through, or simply listen. Hush Companion gives you four conversation modes powered by AI: Vent (speak freely, get calm reflections), Debate (steelman both sides of any argument), Listen (get clear explanations on any topic), and Wellness (grounding, breathing, and workday reset exercises). Voice-first, privacy-conscious, and open source. Uses Anna's built-in AI or your own Google Gemini key. No subscription. No lock-in.",
+  "category": "productivity",
+  "homepage_url": "https://devkdas.github.io/hush-companion/",
+  "support_url": "https://github.com/devkdas/hush-companion/issues",
+  "privacy_url": "https://github.com/devkdas/hush-companion#privacy-and-safety"
+}
