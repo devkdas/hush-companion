@@ -511,6 +511,17 @@ export default function App() {
           speechSupported={speechSupported}
           onMute={toggleMute} onListen={beginListening} onSpeak={toggleVoice}
           onEnd={() => confirmLeave(endConversation)}
+          onTextSend={(text) => {
+            speechRunRef.current += 1;
+            ttsQueueRef.current = Promise.resolve();
+            conversationActiveRef.current = true;
+            setCallPhase('thinking');
+            void send(text, settingsRef.current, messagesRef.current, updateMessages,
+              voiceRef.current, speedRef.current, aiConfigRef.current, speechRunRef, ttsQueueRef,
+              () => { setCallPhase('idle'); },
+              () => setCallPhase('speaking'),
+            );
+          }}
         />
       )}
 

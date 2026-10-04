@@ -1,4 +1,5 @@
-import { Mic, MicOff, Repeat2, Waves, Zap } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Mic, MicOff, Repeat2, Send, Waves, Zap } from 'lucide-react';
 import type { CallPhase, ChatMessage, Mode } from '../types';
 
 interface CallProps {
@@ -14,14 +15,32 @@ interface CallProps {
   onListen: () => void;
   onSpeak: () => void;
   onEnd: () => void;
+  onTextSend?: (text: string) => void;
 }
 
-export function Call({ mode, duration, muted, listening, speaking, callState, messages, speechSupported, onMute, onListen, onSpeak, onEnd }: CallProps) {
+export function Call({
+  mode, duration, muted, listening, speaking, callState, messages,
+  speechSupported, onMute, onListen, onSpeak, onEnd, onTextSend,
+}: CallProps) {
+  const [textInput, setTextInput] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const stateLabel =
     callState === 'listening' ? 'Listening to you' :
     callState === 'thinking'  ? 'Thinking…' :
     callState === 'speaking'  ? 'Hush Companion is speaking' :
                                 'Ready when you are';
+
+  const submitText = () => {
+    const val = textInput.trim();
+    if (!val || !onTextSend) return;
+    setTextInput('');
+    onTextSend(val);
+  };
+
+  // Anna iframe blocks microphone via Permissions-Policy header.
+  // Show text fallback instead of broken "Listening…" state.
+  const micBlocked = !speechSupported;
 
   return (
     <section className="call-screen">
@@ -30,7 +49,7 @@ export function Call({ mode, duration, muted, listening, speaking, callState, me
         <span>{duration}</span>
       </div>
       <div className="call-center">
-        <div className={speaking ? 'voice-orb speaking' : 'voice-orb'}>
+        <div className={speaking ? 'voice-orb speaking' : listening ? 'voice-orb listening' : 'voice-orb'}>
           <div className="orb-core"><Waves size={38} /></div>
         </div>
         <div className="call-state">{stateLabel}</div>
@@ -55,13 +74,41 @@ export function Call({ mode, duration, muted, listening, speaking, callState, me
           <span>{speaking ? 'Stop' : 'Repeat'}</span>
         </button>
       </div>
-      {!speechSupported ? (
-        <p className="interrupt-note" style={{ color: 'var(--color-warn,#c0392b)' }}>
-          ⚠ Voice input is not supported in this browser. Try Chrome or Edge.
-        </p>
+
+      {micBlocked ? (
+        /* ── Text fallback when mic is blocked (e.g. Anna iframe) ── */
+        <div className="text-input-fallback">
+          <div className="text-input-row">
+            <input
+              ref={inputRef}
+              type="text"
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitText(); }}
+              placeholder="Type your message…"
+              disabled={callState === 'thinking'}
+              className="text-message-input"
+            />
+            <button
+              type="button"
+              className="primary-button send-btn"
+              onClick={submitText}
+              disabled={!textInput.trim() || callState === 'thinking'}
+            >
+              <Send size={16} />
+            </button>
+          </div>
+          <p className="interrupt-note">
+            <Zap size={13} /> Voice input unavailable in this window — type your message above
+          </p>
+        </div>
       ) : (
         <>
-          <button className="primary-button mic-action" onClick={onListen} disabled={muted}>
+          <button
+            className="primary-button mic-action"
+            onClick={onListen}
+            disabled={muted || listening}
+          >
             {listening ? 'Listening…' : speaking ? 'Interrupt and speak' : 'Speak with Hush Companion'}
           </button>
           <p className="interrupt-note"><Zap size={13} /> You can interrupt anytime</p>
