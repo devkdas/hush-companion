@@ -35,6 +35,10 @@ declare global {
         set: (key: string, value: unknown) => Promise<void>;
         delete: (key: string) => Promise<void>;
       };
+      audio: {
+        speak: (opts: { text: string; voice?: string }) => Promise<void>;
+        transcribe: (opts: { audioBase64: string; language?: string }) => Promise<{ text: string }>;
+      };
       window: {
         ready: () => void;
         set_title: (title: string) => void;

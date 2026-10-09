@@ -22,6 +22,7 @@ declare global {
 }
 
 export function isSpeechRecognitionSupported(): boolean {
+  if (typeof window !== 'undefined' && window.anna?.audio?.transcribe) return true;
   return typeof window !== 'undefined' && !!(window.SpeechRecognition ?? window.webkitSpeechRecognition);
 }
 
@@ -30,11 +31,25 @@ const PERMANENT_RECOGNITION_ERRORS = new Set([
   'not-allowed', 'service-not-available', 'language-not-supported', 'bad-grammar',
 ]);
 
+import { AnnaSpeechRecognition } from './anna-speech';
+
 export function createRecognition(
   onText: (text: string) => void,
   onEnd: () => void,
   onError?: (permanent: boolean) => void,
 ): BrowserSpeechRecognition | null {
+  if (window.anna?.audio?.transcribe) {
+    const recognition = new AnnaSpeechRecognition();
+    recognition.lang = (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
+    recognition.onresult = (event) => onText(event.results[0][0].transcript);
+    recognition.onend = onEnd;
+    recognition.onerror = (event: { error?: string }) => {
+      const permanent = PERMANENT_RECOGNITION_ERRORS.has(event?.error ?? '');
+      if (onError) { onError(permanent); } else { onEnd(); }
+    };
+    return recognition;
+  }
+
   const Constructor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
   if (!Constructor) return null;
   const recognition = new Constructor();
@@ -204,37 +219,12 @@ export function speakChunk(
   preferences: VoicePreferences,
   onEnd?: () => void,
 ): Promise<void> {
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = () => {
-      if (settled) return;
-      settled = true;
-      activeSpeechCancel = null;
-      onEnd?.();
-      resolve();
-    };
-    if (!text.trim() || !('speechSynthesis' in window)) {
-      finish();
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(text.trim());
-    utterance.voice = preferredVoice(preferences, window.speechSynthesis.getVoices()) ?? null;
-    utterance.rate = preferences.speed === 'slow' ? 0.85 : preferences.speed === 'fast' ? 1.15 : 1;
-    utterance.pitch = preferences.profile === 'masculine' ? 0.85 : preferences.profile === 'feminine' ? 1.08 : 1;
-    activeSpeechCancel = finish;
-    utterance.onend = finish;
-    utterance.onerror = finish;
-    window.speechSynthesis.speak(utterance);
-  });
-}
-
-export function speak(text: string, preferences: VoicePreferences, onEnd?: () => void): void {
-  if (!('speechSynthesis' in window)) {
+  const trimmed = text.trim();
+  if (!trimmed) {
     onEnd?.();
-    return;
+    return Promise.resolve();
   }
-  stopSpeaking();
-  const utterance = new SpeechSynthesisUtterance(text);
+
   let settled = false;
   const finish = () => {
     if (settled) return;
@@ -242,6 +232,55 @@ export function speak(text: string, preferences: VoicePreferences, onEnd?: () =>
     activeSpeechCancel = null;
     onEnd?.();
   };
+
+  if (window.anna?.audio?.speak) {
+    activeSpeechCancel = finish;
+    return window.anna.audio.speak({ text: trimmed }).then(finish).catch(finish);
+  }
+
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window)) {
+      finish();
+      resolve();
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(trimmed);
+    utterance.voice = preferredVoice(preferences, window.speechSynthesis.getVoices()) ?? null;
+    utterance.rate = preferences.speed === 'slow' ? 0.85 : preferences.speed === 'fast' ? 1.15 : 1;
+    utterance.pitch = preferences.profile === 'masculine' ? 0.85 : preferences.profile === 'feminine' ? 1.08 : 1;
+    activeSpeechCancel = () => { finish(); resolve(); };
+    utterance.onend = () => { finish(); resolve(); };
+    utterance.onerror = () => { finish(); resolve(); };
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+export function speak(text: string, preferences: VoicePreferences, onEnd?: () => void): void {
+  stopSpeaking();
+  if (!text.trim()) {
+    onEnd?.();
+    return;
+  }
+  
+  let settled = false;
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    activeSpeechCancel = null;
+    onEnd?.();
+  };
+
+  if (window.anna?.audio?.speak) {
+    activeSpeechCancel = finish;
+    window.anna.audio.speak({ text: text.trim() }).then(finish).catch(finish);
+    return;
+  }
+
+  if (!('speechSynthesis' in window)) {
+    finish();
+    return;
+  }
+  const utterance = new SpeechSynthesisUtterance(text.trim());
   utterance.voice = preferredVoice(preferences, window.speechSynthesis.getVoices()) ?? null;
   utterance.rate = preferences.speed === 'slow' ? 0.85 : preferences.speed === 'fast' ? 1.15 : 1;
   utterance.pitch = preferences.profile === 'masculine' ? 0.85 : preferences.profile === 'feminine' ? 1.08 : 1;

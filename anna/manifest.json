@@ -23,7 +23,8 @@
     "host_api": {
       "storage": ["get", "set", "delete"],
       "window": ["set_title", "ready"],
-      "llm": ["complete"]
+      "llm": ["complete", "audio.speak", "audio.transcribe"],
+      "audio": ["speak", "transcribe"]
     },
     "csp_overrides": {
       "connect-src": ["https://generativelanguage.googleapis.com"]
